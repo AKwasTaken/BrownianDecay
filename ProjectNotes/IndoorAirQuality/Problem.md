@@ -4,7 +4,11 @@ In a perfect, laboratory-controlled world, you would know exactly how much $CO_2
 ___
 # The Baseline Math (The Perfect World)
 Traditionally, engineers used a deterministic mass-balance equation to model this:
-$$(6.9) \qquad v \dot{C}^i = -k \left(q^0 + f^1 q^1 + q^2\right) C^i + S - R + k \left(q^0(1 - f^0) + q^2\right)C^0$$
+
+$$
+(6.9) \qquad v \dot{C}^i = -k \left(q^0 + f^1 q^1 + q^2\right) C^i + S - R + k \left(q^0(1 - f^0) + q^2\right)C^0
+$$
+
 This looks intimidating, but it is just an accounting ledger for air. Let's break down the variables:
 - **The Basics:**
     - $v \dot{C}^i$: The room's volume ($v$) multiplied by the changing indoor concentration of $CO_2$ ($\dot{C}^i$). This is what we are trying to solve for.
@@ -46,22 +50,46 @@ Researchers Haghighat, Fazio, and Unny decided that four of these variables were
 2. **Outdoor Concentration ($C^0$):** Becomes $\bar{C}^0 + \xi^{(2)}$ (e.g., a truck driving by).
 3. **Makeup Air Flow ($q^0$):** Becomes $\bar{q}^0 + \xi^{(3)}$ (e.g., mechanical fluctuations in the AC fan).
 4. **Infiltration ($q^2$):** Becomes $\bar{q}^2 + \xi^{(4)}$ (e.g., wind gusts pushing air through window cracks).
-$$S_t = \bar{S} + \xi_t^{(1)}, \qquad C_t^0 = \bar{C}^0 + \xi_t^{(2)}$$
-$$q_t^0 = \bar{q}^0 + \xi_t^{(3)}, \qquad q_t^2 = \bar{q}^2 + \xi_t^{(4)}$$
+
+$$
+S_t = \bar{S} + \xi_t^{(1)}, \qquad C_t^0 = \bar{C}^0 + \xi_t^{(2)}
+$$
+
+
+$$
+q_t^0 = \bar{q}^0 + \xi_t^{(3)}, \qquad q_t^2 = \bar{q}^2 + \xi_t^{(4)}
+$$
+
 # The SDE and Derivation
 These stochastic parameters were substituted back into the baseline differential equation. During this derivation, the higher-order cross-product of the noise terms $\xi_t^{(2)}\xi_t^{(3)}$ (the interaction between outdoor concentration noise and make-up air flow noise) was neglected to yield a tractable Ito stochastic differential equation (SDE):
-$$v dC_t^i = g(C^i, t) dt + H(C^i, t) d\xi_t$$
+
+$$
+v dC_t^i = g(C^i, t) dt + H(C^i, t) d\xi_t
+$$
+
 Here, $\xi_t = (\xi_t^{(1)}, \xi_t^{(2)}, \xi_t^{(3)}, \xi_t^{(4)})$ represents the combined noise processes (interpreted as independent Wiener processes).
 The deterministic drift term, $g(C^i, t)$, is a scalar function based on the mean values:
-$$g(C^i, t) = -k \left(\bar{q}^0 + f^1 q^1 + \bar{q}^2\right) C^i + \bar{S} - R + k \left(\bar{q}^0(1 - f^0) + \bar{q}^2\right)\bar{C}^0$$
+
+$$
+g(C^i, t) = -k \left(\bar{q}^0 + f^1 q^1 + \bar{q}^2\right) C^i + \bar{S} - R + k \left(\bar{q}^0(1 - f^0) + \bar{q}^2\right)\bar{C}^0
+$$
+
 The stochastic diffusion term is governed by $H(C^i, t)$, a row vector function mathematically capturing how each specific noise term shocks the system. Its transpose is explicitly defined as:
-$$H(C^i, t)^T = \begin{pmatrix} 1 \\ k \left(\bar{q}^0 (1 - f^0) + \bar{q}^2\right) \\ k(\bar{q}^0(1 - f^0) - C^i)\bar{C}^0 \\ k(\bar{C}^0 - C^i) \end{pmatrix}$$
+
+$$
+H(C^i, t)^T = \begin{pmatrix} 1 \\ k \left(\bar{q}^0 (1 - f^0) + \bar{q}^2\right) \\ k(\bar{q}^0(1 - f^0) - C^i)\bar{C}^0 \\ k(\bar{C}^0 - C^i) \end{pmatrix}
+$$
+
 ___
 # The Final SDE (Equation 6.10)
 They substituted these noisy variables back into the original Equation 6.9.
 _(A quick math trick they used: when you multiply two random noise variables together, like $\xi^{(2)} \times \xi^{(3)}$, the resulting number is so unimaginably small that they just crossed it out to keep the math clean)._
 The result is the final **Itô Stochastic Differential Equation**:
-$$(6.10) \qquad v dC_t^i = g(C^i, t) dt + H(C^i, t) d\xi_t$$
+
+$$
+(6.10) \qquad v dC_t^i = g(C^i, t) dt + H(C^i, t) d\xi_t
+$$
+
 This beautifully separates the predictable physics from the chaotic noise:
 - **The Drift Term, $g(C^i, t) dt$:** This is just the original equation using the _average_ baseline values. It represents what the $CO_2$ level is mathematically expected to do over time.
 - **The Diffusion Term, $H(C^i, t) d\xi_t$:** This is a vector matrix ($H$) multiplied by the four sources of noise ($\xi_t$). It mathematically calculates how much a sudden gust of wind, a passing truck, or an extra person breathing will instantly knock the $CO_2$ concentration off its expected path.

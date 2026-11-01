@@ -29,20 +29,40 @@ __________
 Harris uses a 5-dimensional mathematical system to track these variables. Because the incoming sewage is unpredictable, the first two equations use **Itô Stochastic Differential Equations (SDEs)**, which include mathematical "noise."
 #### Part A: The Random Inputs (Equations 6.1 & 6.2)
 These two equations model the turbulent, chaotic nature of the raw sewage entering the plant.
-$$(6.1) \qquad dX_t^2 = \left(\alpha_1 + 1 - \beta_1 \frac{X_t^2}{X_t^1}\right) dt + \sqrt{2\gamma_1 \frac{X_t^2}{X_t^1}} dW_t^1$$
-$$(6.2) \qquad dX_t^3 = \frac{(\alpha_2 + 1 - \beta_2 X_t^3)}{X_t^1} dt + \sqrt{2\gamma_2 \frac{X_t^3}{X_t^1}} dW_t^2$$
+
+$$
+(6.1) \qquad dX_t^2 = \left(\alpha_1 + 1 - \beta_1 \frac{X_t^2}{X_t^1}\right) dt + \sqrt{2\gamma_1 \frac{X_t^2}{X_t^1}} dW_t^1
+$$
+
+
+$$
+(6.2) \qquad dX_t^3 = \frac{(\alpha_2 + 1 - \beta_2 X_t^3)}{X_t^1} dt + \sqrt{2\gamma_2 \frac{X_t^3}{X_t^1}} dW_t^2
+$$
+
 - **What this means:** $dX_t^2$ tracks the changing flow rate, and $dX_t^3$ tracks the changing pollutant concentration.
 - **The two halves:** In both equations, the part multiplied by $dt$ represents the predictable, average baseline behaviour. The part multiplied by $dW_t$ represents the unpredictable "white noise" or random spikes (like a sudden rainstorm).
 - **The parameters:** $\alpha, \beta,$ and $\gamma$ are just positive numbers used to tune how severe the random fluctuations are.
 #### Part B: The Equalization Tank (Equations 6.3 & 6.4)
 Once the water is in the holding tank, we use standard **Ordinary Differential Equations (ODEs)** based on mass balance.
-$$(6.3) \qquad dX_t^1 = \left(\frac{\alpha_1 + 1}{\beta_1} - X_t^2\right) dt$$
-$$(6.4) \qquad dX_t^4 = (X_t^3 - X_t^4) \frac{X_t^2}{X_t^1} dt$$
+
+$$
+(6.3) \qquad dX_t^1 = \left(\frac{\alpha_1 + 1}{\beta_1} - X_t^2\right) dt
+$$
+
+
+$$
+(6.4) \qquad dX_t^4 = (X_t^3 - X_t^4) \frac{X_t^2}{X_t^1} dt
+$$
+
 - **What this means:** Equation 6.3 tracks how the volume of the holding tank goes up and down based on the incoming flow ($X^2$). Equation 6.4 tracks how the concentration of the pollutant gets diluted or concentrated before it leaves the holding tank ($X^4$).
 - **No explicit noise:** Notice there is no $dW_t$ (noise) term here. The randomness is already accounted for inside the $X^2$ and $X^3$ variables from the previous step.
 #### Part C: The Reactor Tank (Equation 6.5)
 This is where the biological treatment happens.
-$$(6.5) \qquad dX_t^5 = \left(a + b \left(X_t^4 - X_t^5\right)\right) dt$$
+
+$$
+(6.5) \qquad dX_t^5 = \left(a + b \left(X_t^4 - X_t^5\right)\right) dt
+$$
+
 - **What this means:** This tracks the final pollutant concentration leaving the plant. It depends on what enters from the holding tank ($X^4$) and what is currently in the reactor ($X^5$).
 - **The parameters:** $a$ and $b$ are biological factors. They represent how fast the micro-organisms grow and how efficiently they eat the waste (yield constant), as well as carrying over some noise parameters.
 _________

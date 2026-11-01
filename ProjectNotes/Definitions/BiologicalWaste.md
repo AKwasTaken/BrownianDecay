@@ -7,7 +7,11 @@ It is the foundational equation for designing bioreactors, modelling wastewater 
 
 The model is expressed by a hyperbolic equation that looks very similar to the Michaelis-Menten equation used in enzyme kinetics:
 
-$$\mu = \mu_{max} \frac{S}{K_s + S}$$
+
+$$
+\mu = \mu_{max} \frac{S}{K_s + S}
+$$
+
 
 Where:
 

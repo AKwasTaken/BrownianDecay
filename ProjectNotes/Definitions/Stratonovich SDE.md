@@ -7,9 +7,17 @@ In stochastic calculus, integrating a differential equation driven by a Wiener p
 Because the Stratonovich midpoint evaluation implicitly correlates the state with the noise, it generates a systematic bias over time. When converting to Itô rules (which assume zero correlation), this bias must be explicitly added to the deterministic drift of the equation. This correction is known as the "noise-induced drift."
 For a general Stratonovich SDE with a deterministic rate $F(X_t)$ and multiple independent noise sources $g_i(X_t)$:
 
-$$dX_t = F(X_t)dt + \sum_{i} g_i(X_t) \circ dW_t^i$$
+
+$$
+dX_t = F(X_t)dt + \sum_{i} g_i(X_t) \circ dW_t^i
+$$
+
 The equivalent Itô SDE is obtained by adding the derivative-based correction term $\frac{1}{2} g_i(X_t) g_i'(X_t)$ for each multiplicative noise term:
-$$dX_t = \left[ F(X_t) + \frac{1}{2} \sum_{i} g_i(X_t) \frac{\partial g_i(X_t)}{\partial X_t} \right] dt + \sum_{i} g_i(X_t) dW_t^i$$
+
+$$
+dX_t = \left[ F(X_t) + \frac{1}{2} \sum_{i} g_i(X_t) \frac{\partial g_i(X_t)}{\partial X_t} \right] dt + \sum_{i} g_i(X_t) dW_t^i
+$$
+
 By applying this transformation, the $\circ$ symbol is dropped, indicating that standard Itô numerical integration can now be safely applied without violating the underlying physics of the system.
 
 | **Feature**          | **Itô SDE**                                                                          | **Stratonovich SDE (∘)**                                                                                    |
