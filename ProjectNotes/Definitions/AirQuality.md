@@ -14,21 +14,17 @@ $$
 S = \bar{S} + \xi^{(1)}
 $$
 
-
 $$
 C^0 = \bar{C}^0 + \xi^{(2)}
 $$
-
 
 $$
 q^0 = \bar{q}^0 + \xi^{(3)}
 $$
 
-
 $$
 q^2 = \bar{q}^2 + \xi^{(4)}
 $$
-
 ## Step 3: Substitution
 We substitute these decomposed parameters back into the baseline equation:
 
@@ -95,3 +91,4 @@ By multiplying the entire equation by $dt$ and converting the noise terms $\xi_t
 $$
 v dC_t^i = g(C^i, t) dt + H(C^i, t) d\xi_t
 $$
+______
