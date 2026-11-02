@@ -91,7 +91,6 @@ Three rows are completely zero. In pure mathematics, if a diffusion matrix has z
 However, because $X^2$ directly enters $dX^1$ and $dX^4$, and $X^4$ directly enters $dX^5$, the noise injected at states 2 and 3 "transfers" down the chain through the drift vector fields. This system satisfies Hörmander’s bracket condition for hypoellipticity, meaning that despite having only 2 noise sources for 5 variables, the solution admits a smooth transition probability density function in $\mathbb{R}^5$.
 __________
 # Part 3: Interpreting Every Single Analysis Plot
-Here is what every block of analysis actually means and how to read the plots.
 ### 1. Damping Ratio & Cross-Correlation
 - **Damping:** $\frac{\text{Var}(X^4)}{\text{Var}(X^3)} \implies$ Quantifies noise absorption
 - **Lag:** $R_{34}(\tau) \implies$ Measures hydraulic transit delay
