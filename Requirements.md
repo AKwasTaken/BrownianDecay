@@ -27,7 +27,7 @@ Your project report should cover the following aspects. The write-up has to be t
 3. **Model Description:**
    1. Present the mathematical formulation of the stochastic differential equation (SDE) model clearly.
    2. Describe each term in the SDE (drift term, diffusion term, Wiener process) along with its physical or probabilistic interpretation.
-   3. [ ] Specify the numerical method (e.g., [Euler-Maruyama](https://en.wikipedia.org/wiki/Euler%E2%80%93Maruyama_method), [Milstein](https://en.wikipedia.org/wiki/Milstein_method)) used for simulation.
+   3. Specify the numerical method (e.g., [Euler-Maruyama](https://en.wikipedia.org/wiki/Euler%E2%80%93Maruyama_method), [Milstein](https://en.wikipedia.org/wiki/Milstein_method)) used for simulation.
 
 4. **Recent Developments / State of the Art:**
    5. Identify any notable extensions, variations, or recent applications of SDE models in biological waste treatment, hydrology, or indoor air quality modelling.
