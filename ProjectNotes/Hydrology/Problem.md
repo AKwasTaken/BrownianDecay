@@ -180,3 +180,5 @@ _______
 Unny and Karmeshu used this equation in computer simulations to generate "sample paths"—essentially running hundreds of virtual simulations of a lake's outflow to see all the different ways the water levels might behave under random weather conditions.
 But they didn't stop at one lake. They realized you could chain these equations together to model a **cascade of lakes**, like the Great Lakes in North America. In a cascade, the unpredictable outflow ($X_t$) of Lake Superior becomes a highly chaotic input for Lake Huron, which adds its own random weather noise, and passes it to Lake Erie, and so on. This creates a massive, coupled system of equations that is vital for predicting catastrophic flooding across the entire region.
 ___
+
+Read more about the paper [[HydrologyPaper.pdf|here]]. 
