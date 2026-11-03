@@ -1,0 +1,123 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[largesmallcaps]{kpfonts}
+\linespread{1.04}
+
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\pa}[1]{\left(#1\right)}
+\newcommand{\bra}[1]{\left[#1\right]}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\der}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\pder}[2]{\pa{\frac{\partial #1}{\partial #2}}}
+
+
+\swapnumbers
+\newtheoremstyle{plainsc}{8pt}{8pt}{\normalfont\itshape}{}{\normalfont\bfseries\scshape}{.}{.5em}{}
+\newtheoremstyle{definitionsc}{8pt}{8pt}{\normalfont}{}{\normalfont\bfseries\scshape}{.}{.5em}{}
+\newtheoremstyle{remarksc}{8pt}{8pt}{\normalfont}{}{\normalfont\bfseries\scshape}{.}{.5em}{}
+
+\theoremstyle{definitionsc}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}[definition]{Example}
+
+\theoremstyle{plainsc}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{corollary}[definition]{Corollary}
+
+\theoremstyle{remarksc}
+\newtheorem{remark}[definition]{Remark}
+
+\begin{document}
+
+\title{%
+  {\huge\textls[40]{\scshape\MakeUppercase{Biological Waste Treatment, \\Hydrology, and Indoor Air Quality}}}\\[0.6ex]
+  {\footnotesize\textls[50]{\scshape\MakeLowercase{Course Project: Applied Stochastic Analysis (I2M411/MAT4511)}}}
+}
+
+
+\author{
+  \IEEEauthorblockN{
+    Aneeth Kumaar, 
+    Sivasankaran R S, 
+    Ashlin Nelson, 
+    Amal Abdullah, 
+    Sarang Sudhakar
+  }
+  \IEEEauthorblockA{
+  	\{aneeth23, sivasankaran23, ashlin23, amal23, sarang23\}@iisertvm.ac.in\\
+  	\\
+    \textit{IISER TVM, Vithura, Kerala}
+  }
+}
+
+\maketitle
+
+\begin{abstract}
+Stochastic differential equations (SDEs) provide a natural framework for modeling environmental and biological processes subject to intrinsic variability, turbulent dispersion, and random external perturbations. In this report, we formulate and investigate continuous stochastic systems describing biological waste degradation, hydrological streamflow/pollutant transport, and indoor air contaminant dynamics. We construct It\^o diffusion formulations, identify physical interpretations for drift and diffusion operators, and analyze numerical simulations performed via the Euler--Maruyama integration scheme.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Stochastic Differential Equations, It\^o Calculus, Biological Waste Degradation, Hydrological Transport, Indoor Air Quality.
+\end{IEEEkeywords}
+
+\section{Motivation and Background}
+\begin{itemize}
+    \item \textbf{Physical System:} Real-world degradation kinetics, open-channel streamflow pollutant mixing, and indoor particulate ventilation operate under continuous environmental fluctuations and irregular driving loads.
+    \item \textbf{Why Stochastic Modeling?} Deterministic reaction-diffusion equations assume homogenous reaction rates and smooth flow velocities. Incorporating Brownian motion accounts for microscopic uncertainties, thermal turbulence, and non-uniform boundary influxes.
+\end{itemize}
+
+\section{Brief Literature Survey}
+Foundational mathematical treatments of environmental SDE systems trace back to stochastic degradation models and multi-compartment diffusion dynamics \cite{kloeden1992}. 
+
+\section{Model Description}
+\begin{definition}
+Let $X_t$ denote the pollutant or substrate concentration at time $t \ge 0$. The governing It\^o stochastic differential equation is expressed as:
+\begin{equation}
+\mathrm{d}X_t = \mu(X_t, t)\,\mathrm{d}t + \sigma(X_t, t)\,\mathrm{d}W_t, \quad X_0 = x_0
+\label{eq:sde}
+\end{equation}
+where $\mu(X_t, t)$ represents the deterministic reaction drift, $\sigma(X_t, t)$ denotes the state-dependent diffusion coefficient, and $W_t$ is a standard one-dimensional Wiener process satisfying:
+\begin{align}
+\mathbb{E}[\mathrm{d}W_t] &= 0, \\
+\mathbb{E}[(\mathrm{d}W_t)^2] &= \mathrm{d}t.
+\end{align}
+\end{definition}
+
+\subsection{Numerical Integration Scheme}
+\begin{theorem}
+Given a temporal discretization $0 = t_0 < t_1 < \dots < t_N = T$ with uniform step size $\Delta t = t_{n+1} - t_n$, the Euler--Maruyama discrete approximation follows the recurrence:
+\begin{equation}
+X_{n+1} = X_n + \mu(X_n, t_n)\Delta t + \sigma(X_n, t_n)\Delta W_n
+\end{equation}
+where the increments $\Delta W_n = W_{t_{n+1}} - W_{t_n} \sim \mathcal{N}(0, \Delta t)$ are independent and identically distributed.
+\end{theorem}
+
+\section{Recent Developments / State of the Art}
+Modern extensions integrate jump-diffusion processes (Poisson counters) to capture sudden shock loads and coupled spatial advection-diffusion-reaction stochastic partial differential equations (SPDEs).
+
+\section{Results and Discussion}
+Trajectory simulations illustrate sample path variance and stationary density profiles under varying noise intensities $\sigma$.
+
+\section{Conclusion and Possible Extensions}
+The model demonstrates how intrinsic environmental noise modifies deterministic equilibrium thresholds. Potential extensions include multi-box indoor configurations and non-Gaussian driver distributions.
+
+\section*{Acknowledgment}
+The authors express their gratitude to Dr.~Utpal for course guidance and project mentorship throughout the semester.
+
+\begin{thebibliography}{00}
+\bibitem{kloeden1992} P. E. Kloeden and E. Platen, \textit{Numerical Solution of Stochastic Differential Equations}. Berlin, Germany: Springer-Verlag, 1992.
+\end{thebibliography}
+
+\end{document}

@@ -1,5 +1,21 @@
-.venv
+# MacOS Stuff
 *.DS_Store
 /.DS_Store
+
+# Python Stuff
 uv.lock
 pyproject.toml
+.venv/
+
+# TeX Stuff
+/TeX/.texpadtmp
+/TeX/*.aux
+/TeX/*.bbl
+/TeX/*.blg
+/TeX/*.fls
+/TeX/*.fdb_latexmk
+/TeX/*.log
+/TeX/*.out
+/TeX/*.synctex.gz
+/TeX/*.toc
+
