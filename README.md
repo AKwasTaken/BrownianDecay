@@ -1,7 +1,15 @@
-<div style="text-align: center">
-<h1 ><strong>Brownian-Decay</strong></h1>
-<a href="./TeX/report.pdf">Current Progress</a>
+<div align="center">
+
+# **Brownian-Decay**
+
+[![Report Preview](./TeX/preview.png)](./TeX/report.pdf)
+
+[View Full Report (PDF)](./TeX/report.pdf)
+
 </div>
+
+
+
 
 ## Requirements
 
