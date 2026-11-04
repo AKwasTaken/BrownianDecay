@@ -1,17 +1,21 @@
-# BrownianDecay
+<div style="text-align: center">
+<h1 ><strong>Brownian-Decay</strong></h1>
+<a href="./TeX/report.pdf">Current Progress</a>
+</div>
 
 ## Requirements
 
 ### Primary Reference
 
-**P. E. Kloeden and E. Platen**, *Numerical Solution of Stochastic Differential Equations*, Springer.  
+**P. E. Kloeden and E. Platen**, _Numerical Solution of Stochastic Differential Equations_, Springer.  
 Please refer to **Chapter 7 - Applications of Stochastic Differential Equations** (available in your course Google Classroom), which contains 10 sections illustrating application models across different domains.
 
 ---
 
 ### Selected Project Topic
+
 **Biological Waste Treatment, Hydrology, and Indoor Air Quality**  
-*(Derived from Section 7.5: Biological Waste Treatment, Hydrology, and Air Quality)*
+_(Derived from Section 7.5: Biological Waste Treatment, Hydrology, and Air Quality)_
 [[Notes|Notes From the Section 7.5]]
 
 ---
@@ -33,19 +37,15 @@ Your project report should cover the following aspects. The write-up has to be t
    2. Describe each term in the SDE (drift term, diffusion term, Wiener process) along with its physical or probabilistic interpretation.
    3. Specify the numerical method (e.g., [Euler-Maruyama](https://en.wikipedia.org/wiki/Euler%E2%80%93Maruyama_method), [Milstein](https://en.wikipedia.org/wiki/Milstein_method)) used for simulation.
 
-4. **Recent Developments / State of the Art:**
-   5. Identify any notable extensions, variations, or recent applications of SDE models in biological waste treatment, hydrology, or indoor air quality modelling.
-   6. Briefly describe how current research uses or improves upon this baseline model.
+4. **Recent Developments / State of the Art:** 5. Identify any notable extensions, variations, or recent applications of SDE models in biological waste treatment, hydrology, or indoor air quality modelling. 6. Briefly describe how current research uses or improves upon this baseline model.
 
-7. **Results and Discussion:**
-   8. Provide illustrative numerical simulations or analytical results.
-   9. Discuss what insights the model provides and how the stochastic noise component influences the outcomes.
+5. **Results and Discussion:** 8. Provide illustrative numerical simulations or analytical results. 9. Discuss what insights the model provides and how the stochastic noise component influences the outcomes.
 
-10. **Conclusion and Possible Extensions:**
-   11. Summarize key findings.
-   12. Mention possible improvements, open questions, or applications in related environmental engineering fields.
+6. **Conclusion and Possible Extensions:**
+7. Summarize key findings.
+8. Mention possible improvements, open questions, or applications in related environmental engineering fields.
 
-13. **Bibliography**
+9. **Bibliography**
 
 ---
 
