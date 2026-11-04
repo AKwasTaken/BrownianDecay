@@ -20,6 +20,9 @@
 \newcommand{\der}[2]{\frac{\partial #1}{\partial #2}}
 \newcommand{\pder}[2]{\pa{\frac{\partial #1}{\partial #2}}}
 
+\renewcommand{\bigskip}{\vspace{2\baselineskip}}
+\renewcommand{\medskip}{\vspace{1\baselineskip}}
+
 
 \swapnumbers
 \newtheoremstyle{plainsc}{8pt}{8pt}{\normalfont\itshape}{}{\normalfont\bfseries\scshape}{.}{.5em}{}
@@ -72,52 +75,77 @@ Stochastic differential equations (SDEs) provide a natural framework for modelin
 Stochastic Differential Equations, It\^o Calculus, Biological Waste Degradation, Hydrological Transport, Indoor Air Quality.
 \end{IEEEkeywords}
 
-\section{Motivation and Background}
+
+
+
+
+\section{Motivation}
+
 \begin{itemize}
-    \item \textbf{Physical System:} Real-world degradation kinetics, open-channel streamflow pollutant mixing, and indoor particulate ventilation operate under continuous environmental fluctuations and irregular driving loads.
-    \item \textbf{Why Stochastic Modeling?} Deterministic reaction-diffusion equations assume homogenous reaction rates and smooth flow velocities. Incorporating Brownian motion accounts for microscopic uncertainties, thermal turbulence, and non-uniform boundary influxes.
+
+\item\textbf{The Engineering Problem}
+
+Currently, to battle wastewater that major cities produce on a daily basis in huge amounts, we use bio-wastewater treatment plants, which use anaerobic digestion as its process to breakdown the filth into biodegradable matter, which is more safer than releasing the polluted water directly into natural water streams. The problems being neither the volume of the incoming water, nor the percentage of filth is constant, and unpredictable. Adding onto it, we will have sharp discharge peaks in the mornings and evenings, random flooding, and unaccounted industrial dumps of chemical waste every so often. We also have to account for delicate working conditions of the fellow bacterial slaves we have in custody.
+		
+		
+	\begin{itemize}
+		\item\textbf{Washout:} If the incoming flow is too erratic, the bacterial colony gets flushed out at a greater rate than their reproduction rate.
+		
+		\item\textbf{Toxic Shock:} An unaccounted spike in the toxic contaminants and pollutants that do pH alterations will cause the bio digestive system to fail and die faster.
+		
+	\end{itemize}
+
+\break
+
+\begin{figure}[htbp] 
+    \centering
+    \includegraphics[width=1.0\linewidth]{wastetanks_flowchart.png} 
+    \caption{Water Treatment Plant Flowchart.}
+    \label{fig:waste-flowchart}
+\end{figure}
+
+\item\textbf{Architecture}
+\begin{itemize}
+	\item\textbf{Tank 1}
+	
+	This tank is a buffer. Its purpose is to contain the surges, smooth out the flow, damping and mixing.
+	
+	\item\textbf{Tank 2}
+	
+	This is the fixed volume tank which contains the live bacteria. It receives the stream from tank 1 and does the bio breakdown.
 \end{itemize}
 
-\section{Brief Literature Survey}
-Foundational mathematical treatments of environmental SDE systems trace back to stochastic degradation models and multi-compartment diffusion dynamics \cite{kloeden1992}. 
+\break
 
-\section{Model Description}
-\begin{definition}
-Let $X_t$ denote the pollutant or substrate concentration at time $t \ge 0$. The governing It\^o stochastic differential equation is expressed as:
+\item \textbf{The State Variables}
+
+\begin{itemize}
+	\item \textbf{\(X_t^1\):} Volume of fluid in \textbf{Tank 1} \((m^3)\)
+	\item \textbf{\(X_t^2\):} The flow rate of entering fluid \((m^3/day)\)
+	\item \textbf{\(X_t^3\):} Pollutant concentration of the inflow \((mg/L\) or \(g/m^3)\)
+	\item \textbf{\(X_t^4\):} Pollutant concentration flowing from \textbf{Tank 1} to \textbf{Tank 2} \((mg/L)\)
+	\item \textbf{\(X_t^5\):} Pollutant concentration flowing out of \textbf{Tank 1} \((mg/L)\)
+\end{itemize}
+
+\end{itemize}
+
+\bigskip
+
+
+\section{Derivations and Formulations}
+
+
+%\bigskip
+
+This system is modelled by a a 5D non-linear SDE (Stochastic Differential Equation), given by:
+
 \begin{equation}
-\mathrm{d}X_t = \mu(X_t, t)\,\mathrm{d}t + \sigma(X_t, t)\,\mathrm{d}W_t, \quad X_0 = x_0
-\label{eq:sde}
+	dX_t = f(X_t)dt + G(X_t)dW_t
 \end{equation}
-where $\mu(X_t, t)$ represents the deterministic reaction drift, $\sigma(X_t, t)$ denotes the state-dependent diffusion coefficient, and $W_t$ is a standard one-dimensional Wiener process satisfying:
-\begin{align}
-\mathbb{E}[\mathrm{d}W_t] &= 0, \\
-\mathbb{E}[(\mathrm{d}W_t)^2] &= \mathrm{d}t.
-\end{align}
-\end{definition}
 
-\subsection{Numerical Integration Scheme}
-\begin{theorem}
-Given a temporal discretization $0 = t_0 < t_1 < \dots < t_N = T$ with uniform step size $\Delta t = t_{n+1} - t_n$, the Euler--Maruyama discrete approximation follows the recurrence:
-\begin{equation}
-X_{n+1} = X_n + \mu(X_n, t_n)\Delta t + \sigma(X_n, t_n)\Delta W_n
-\end{equation}
-where the increments $\Delta W_n = W_{t_{n+1}} - W_{t_n} \sim \mathcal{N}(0, \Delta t)$ are independent and identically distributed.
-\end{theorem}
 
-\section{Recent Developments / State of the Art}
-Modern extensions integrate jump-diffusion processes (Poisson counters) to capture sudden shock loads and coupled spatial advection-diffusion-reaction stochastic partial differential equations (SPDEs).
-
-\section{Results and Discussion}
-Trajectory simulations illustrate sample path variance and stationary density profiles under varying noise intensities $\sigma$.
-
-\section{Conclusion and Possible Extensions}
-The model demonstrates how intrinsic environmental noise modifies deterministic equilibrium thresholds. Potential extensions include multi-box indoor configurations and non-Gaussian driver distributions.
-
-\section*{Acknowledgment}
-The authors express their gratitude to Dr.~Utpal for course guidance and project mentorship throughout the semester.
-
-\begin{thebibliography}{00}
-\bibitem{kloeden1992} P. E. Kloeden and E. Platen, \textit{Numerical Solution of Stochastic Differential Equations}. Berlin, Germany: Springer-Verlag, 1992.
-\end{thebibliography}
+%\begin{thebibliography}{00}
+%\bibitem{kloeden1992} P. E. Kloeden and E. Platen, \textit{Numerical Solution of Stochastic Differential Equations}. Berlin, Germany: Springer-Verlag, 1992.
+%\end{thebibliography}
 
 \end{document}
