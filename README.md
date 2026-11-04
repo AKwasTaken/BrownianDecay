@@ -1,14 +1,9 @@
 <div align="center">
 
 # **Brownian-Decay**
-
-[![Report Preview](./TeX/preview.png)](./TeX/report.pdf)
-
-[View Full Report (PDF)](./TeX/report.pdf)
+### Deadline: **Nov 15, 2026** - Sunday.
 
 </div>
-
-
 
 
 ## Requirements
@@ -57,4 +52,8 @@ Your project report should cover the following aspects. The write-up has to be t
 
 ---
 
-## Deadline: **Nov 15, 2026** - Sunday.
+## Report preview
+
+[![Report Preview](./TeX/preview.png)](./TeX/report.pdf)
+
+---
