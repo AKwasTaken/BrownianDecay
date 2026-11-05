@@ -79,6 +79,12 @@ Stochastic Differential Equations, It\^o Calculus, Biological Waste Degradation,
 
 
 
+
+
+
+
+
+
 \section{Motivation}
 
 \begin{itemize}
@@ -117,31 +123,46 @@ Currently, to battle wastewater that major cities produce on a daily basis in hu
 
 \break
 
-\item \textbf{The State Variables}
+\item \textbf{The need for Stochastic Calculus}
 
-\begin{itemize}
-	\item \textbf{\(X_t^1\):} Volume of fluid in \textbf{Tank 1} \((m^3)\)
-	\item \textbf{\(X_t^2\):} The flow rate of entering fluid \((m^3/day)\)
-	\item \textbf{\(X_t^3\):} Pollutant concentration of the inflow \((mg/L\) or \(g/m^3)\)
-	\item \textbf{\(X_t^4\):} Pollutant concentration flowing from \textbf{Tank 1} to \textbf{Tank 2} \((mg/L)\)
-	\item \textbf{\(X_t^5\):} Pollutant concentration flowing out of \textbf{Tank 1} \((mg/L)\)
-\end{itemize}
 
 \end{itemize}
 
 \bigskip
 
 
+
+
+
+
+
+
+
+
 \section{Derivations and Formulations}
 
 
-%\bigskip
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{l p{4.5cm} l}
+        \hline
+        \textbf{\shortstack[l]{Variable}} & \textbf{Physical Meaning} & \textbf{Unit} \\
+        \hline
+        $X_t^1$ & Volume of fluid in Tank 1 & $\mathrm{m^3}$ \\
+        \hline
+        $X_t^2$ & The flow rate of entering fluid & $\mathrm{m^3/day}$ \\
+        \hline
+        $X_t^3$ & Pollutant concentration of the inflow & $\mathrm{mg/L}$ or $\mathrm{g/m^3}$ \\
+        \hline
+        $X_t^4$ & Pollutant concentration flowing from Tank 1 to Tank 2 & $\mathrm{mg/L}$ \\
+        \hline
+        $X_t^5$ & Pollutant concentration flowing out of Tank 1 & $\mathrm{mg/L}$ \\
+        \hline
+    \end{tabular}
+\end{table}
 
-This system is modelled by a a 5D non-linear SDE (Stochastic Differential Equation), given by:
 
-\begin{equation}
-	dX_t = f(X_t)dt + G(X_t)dW_t
-\end{equation}
 
 
 %\begin{thebibliography}{00}
