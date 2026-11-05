@@ -42,6 +42,24 @@
 \theoremstyle{remarksc}
 \newtheorem{remark}[definition]{Remark}
 
+
+\makeatletter
+\def\footnoterule{\kern-3\p@
+  \hrule \@width 2in \kern 2.6\p@}
+\makeatother
+
+
+
+
+
+
+
+
+
+
+
+
+
 \begin{document}
 
 \title{%
@@ -125,6 +143,33 @@ Currently, to battle wastewater that major cities produce on a daily basis in hu
 
 \item \textbf{The need for Stochastic Calculus}
 
+In general Chemical Engineering, these systems are modelled using ODEs which were derived from the equation of conservation of Mass:
+
+\begin{equation*}
+	\frac{d(\text{Mass})}{dt} = \text{MassIn} - \text{MassOut} - \text{MassUsed}
+\end{equation*}
+
+\medskip
+
+Bio-degradation relies on non-linear kinetics, like the Monod Equation:
+
+\begin{equation*}
+	\mu(S) = \mu_{\text{max}}\frac{S}{K_{S}+S}
+\end{equation*}
+
+\medskip
+
+This system assumes smooth deterministic flow of the pollutant concentration. Since this function is concave ($\mu''(S)<0$), the predicted value will usually be "better" than the measured value, and will only provide a "Best Case" scenario, which is basically useless as it is very unlikely to happen.
+
+\medskip
+
+Additionally, deterministic models practically fails to answer questions such as:
+
+\begin{itemize}
+	\item How long the plant withstand an erratic inflow before it fails?
+	\item What is the probability that the effluent pollution exceeds environmental safety limits during a 5-day cycle?
+\end{itemize}
+
 
 \end{itemize}
 
@@ -141,6 +186,8 @@ Currently, to battle wastewater that major cities produce on a daily basis in hu
 
 \section{Derivations and Formulations}
 
+
+This widely used model invented by CJ Harris \cite{cjharris} , assumes the wastewater treatment plant as a 5-dimensional state vector: $$X_t=[X_t^1, X_t^2, X_t^3, X_t^4, X_t^5]^T$$
 
 \begin{table}[htbp]
     \centering
@@ -164,9 +211,154 @@ Currently, to battle wastewater that major cities produce on a daily basis in hu
 
 
 
+\subsection{\textbf{Equalization Tank Volume $X^1$}}
+
+The mass balance of the wastewater tank is modeled from equation \ref{eq:mass_balance}:
+
+\begin{equation}
+\label{eq:mass_balance}
+\frac{dV}{dt} = Q_{\text{out}} - Q_{\text{in}}
+\end{equation}
+
+Here, we set the optimal outflow rate from the tank 1 to be such below:
+
+\begin{equation}
+	Q^* = \frac{\alpha_1+1}{\beta_1}
+\end{equation}
+
+where, $\beta _{1}$ is the feedback gain coefficient, and $\alpha _{1}$ is a scaling constant.
+
+\medskip
+
+And the incoming flow is $X_t^2$, and if it exceeds this rate, the total derivative flips to negative, which shows the accumulation of water in the tank.
+
+Hence we have the equation,
+
+\begin{equation}
+\label{eq:Xt1}
+	dX_t^1 = \left(\frac{\alpha_1 + 1}{\beta_1} - X_t^2\right)dt
+\end{equation}
+
+
+\medskip
+
+
+
+
+
+
+
+\subsection{\textbf{Inflow Rate $X^2$}}
+
+The behaviour of this inflow rate is determined by two major forces: \textbf{Drift} (a collective trend), and \textbf{Diffusion} (environmental fluctuations or random noise).
+
+The Drift term is just the constant growth, with a negative feedback, given by:
+
+\begin{equation}
+	\text{Drift Term}=\left(\alpha _{1}+1-\beta _{1}\frac{X_{t}^{2}}{X_{t}^{1}}\right)dt
+\end{equation}
+
+\medskip
+
+When the inflow rate $X_t^2$ becomes too high with respect to the tank volume $X_t^1$, the feedback component ($-\beta_1 {X_t^2}/{X_t^1}$)  becomes larger than the baseline growth, hence it pulls back the flow rate towards balance.
+
+\medskip
+
+We use the Cox-Ingersoll-Ross (CIR) or Feller square-root diffusion model \cite{wfeller} for random disturbances. This stochastic noise is from standard Brownian Motion $dW_t^1$, scaled with the state ratio, given by:
+
+\begin{equation}
+	\text{Diffusion Term}=\sqrt{2\gamma _{1}\frac{X_{t}^{2}}{X_{t}^{1}}}dW_{t}^{1}
+\end{equation}
+
+\medskip
+
+The boundary conditions at $X_t^2 \to 0$ when inflow stops\footnote{While the boundary condition of strict positive drift is a physical anomaly (since we literally cannot have zero inflow), it physically represents an immense pressure build-up somewhere upstream, and computationally ensures the non-negativity of the state variable during simulation.} are:
+
+\begin{itemize}
+	\item The diffusion coefficient becomes zero, so no random noise in the system.
+	\item The drift remains strictly positive, $(\alpha_1 + 1)dt > 0$.
+\end{itemize}
+
+So combining them both, we get:
+\begin{equation}
+\label{eq:Xt2}
+	dX_{t}^{2}=\left(\alpha _{1}+1-\beta _{1}\frac{X_{t}^{2}}{X_{t}^{1}}\right)dt+\sqrt{2\gamma _{1}\frac{X_{t}^{2}}{X_{t}^{1}}}dW_{t}^{1}
+\end{equation}
+
+
+
+
+
+
+
+\medskip
+
+
+
+
+
+
+\subsection{\textbf{Inflow Dirtiness $X^3$}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%\break
 
 %\begin{thebibliography}{00}
-%\bibitem{kloeden1992} P. E. Kloeden and E. Platen, \textit{Numerical Solution of Stochastic Differential Equations}. Berlin, Germany: Springer-Verlag, 1992.
+%
+%
+%\bibitem{cjharris} HARRIS, C. J. (1977) ‘Modelling, simulation and control of stochastic systems with applications in wastewater treatment’, International Journal of Systems Science, 8(4), pp. 393–411. doi: 10.1080/00207727708942050.
+%\bibitem{wfeller} Feller, W. (1951). Two singular diffusion problems. Annals of Mathematics, 54(1), 173–182
+%
 %\end{thebibliography}
 
 \end{document}
