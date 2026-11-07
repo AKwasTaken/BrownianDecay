@@ -22,6 +22,7 @@
 
 \renewcommand{\bigskip}{\vspace{2\baselineskip}}
 \renewcommand{\medskip}{\vspace{1\baselineskip}}
+\renewcommand{\smallskip}{\vspace{0.5\baselineskip}}
 
 
 \swapnumbers
@@ -86,12 +87,10 @@
 \maketitle
 
 \begin{abstract}
-Stochastic differential equations (SDEs) provide a natural framework for modeling environmental and biological processes subject to intrinsic variability, turbulent dispersion, and random external perturbations. In this report, we formulate and investigate continuous stochastic systems describing biological waste degradation, hydrological streamflow/pollutant transport, and indoor air contaminant dynamics. We construct It\^o diffusion formulations, identify physical interpretations for drift and diffusion operators, and analyze numerical simulations performed via the Euler--Maruyama integration scheme.
-\end{abstract}
+This is a nice neat abstract placeholder, which will be replaced by something nice at the end.\end{abstract}
 
 \begin{IEEEkeywords}
-Stochastic Differential Equations, It\^o Calculus, Biological Waste Degradation, Hydrological Transport, Indoor Air Quality.
-\end{IEEEkeywords}
+There are so many keywords here!\end{IEEEkeywords}
 
 
 
@@ -119,7 +118,7 @@ Currently, to battle wastewater that major cities produce on a daily basis in hu
 		
 	\end{itemize}
 
-\break
+%\break
 
 \begin{figure}[htbp] 
     \centering
@@ -139,7 +138,7 @@ Currently, to battle wastewater that major cities produce on a daily basis in hu
 	This is the fixed volume tank which contains the live bacteria. It receives the stream from tank 1 and does the bio breakdown.
 \end{itemize}
 
-\break
+%\break
 
 \item \textbf{The need for Stochastic Calculus}
 
@@ -149,7 +148,7 @@ In general Chemical Engineering, these systems are modelled using ODEs which wer
 	\frac{d(\text{Mass})}{dt} = \text{MassIn} - \text{MassOut} - \text{MassUsed}
 \end{equation*}
 
-\medskip
+\smallskip
 
 Bio-degradation relies on non-linear kinetics, like the Monod Equation:
 
@@ -157,7 +156,7 @@ Bio-degradation relies on non-linear kinetics, like the Monod Equation:
 	\mu(S) = \mu_{\text{max}}\frac{S}{K_{S}+S}
 \end{equation*}
 
-\medskip
+\smallskip
 
 This system assumes smooth deterministic flow of the pollutant concentration. Since this function is concave ($\mu''(S)<0$), the predicted value will usually be "better" than the measured value, and will only provide a "Best Case" scenario, which is basically useless as it is very unlikely to happen.
 
@@ -220,19 +219,20 @@ The mass balance of the wastewater tank is modeled from equation \ref{eq:mass_ba
 \frac{dV}{dt} = Q_{\text{out}} - Q_{\text{in}}
 \end{equation}
 
-Here, we set the optimal outflow rate from the tank 1 to be such below:
+We assume the best outflow rate from the tank 1 to be as such below:
 
-\begin{equation}
+\begin{equation*}
 	Q^* = \frac{\alpha_1+1}{\beta_1}
-\end{equation}
+\end{equation*}
 
 where, $\beta _{1}$ is the feedback gain coefficient, and $\alpha _{1}$ is a scaling constant.
 
-\medskip
+\smallskip
 
-And the incoming flow is $X_t^2$, and if it exceeds this rate, the total derivative flips to negative, which shows the accumulation of water in the tank.
+And the incoming flow is $X_t^2$, and if it exceeds this rate, the total derivative becomes  negative, which shows the accumulation of water in the tank.
+\smallskip
 
-Hence we have the equation,
+So we have the equation,
 
 \begin{equation}
 \label{eq:Xt1}
@@ -250,27 +250,27 @@ Hence we have the equation,
 
 \subsection{\textbf{Inflow Rate $X^2$}}
 
-The behaviour of this inflow rate is determined by two major forces: \textbf{Drift} (a collective trend), and \textbf{Diffusion} (environmental fluctuations or random noise).
+The inflow rate behaviour is determined by two major things: \textbf{Drift} (a flow trend), and \textbf{Diffusion} (environmental fluctuations or random noise).
 
-The Drift term is just the constant growth, with a negative feedback, given by:
+The Drift term is just the constant growth with a negative feedback, given by:
 
-\begin{equation}
+\begin{equation*}
 	\text{Drift Term}=\left(\alpha _{1}+1-\beta _{1}\frac{X_{t}^{2}}{X_{t}^{1}}\right)dt
-\end{equation}
+\end{equation*}
 
-\medskip
+\smallskip
 
-When the inflow rate $X_t^2$ becomes too high with respect to the tank volume $X_t^1$, the feedback component ($-\beta_1 {X_t^2}/{X_t^1}$)  becomes larger than the baseline growth, hence it pulls back the flow rate towards balance.
+When the inflow rate $X_t^2$ becomes too high with respect to the tank volume $X_t^1$, the feedback component ($-\beta_1 {X_t^2}/{X_t^1}$)  becomes larger than the first term, so it pulls back the flow rate towards balance.
 
-\medskip
+\smallskip
 
 We use the Cox-Ingersoll-Ross (CIR) or Feller square-root diffusion model \cite{wfeller} for random disturbances. This stochastic noise is from standard Brownian Motion $dW_t^1$, scaled with the state ratio, given by:
 
-\begin{equation}
+\begin{equation*}
 	\text{Diffusion Term}=\sqrt{2\gamma _{1}\frac{X_{t}^{2}}{X_{t}^{1}}}dW_{t}^{1}
-\end{equation}
+\end{equation*}
 
-\medskip
+\smallskip
 
 The boundary conditions at $X_t^2 \to 0$ when inflow stops\footnote{While the boundary condition of strict positive drift is a physical anomaly (since we literally cannot have zero inflow), it physically represents an immense pressure build-up somewhere upstream, and computationally ensures the non-negativity of the state variable during simulation.} are:
 
@@ -301,6 +301,358 @@ So combining them both, we get:
 \subsection{\textbf{Inflow Dirtiness $X^3$}}
 
 
+The equation that determines the dirtiness rate:
+
+\begin{equation}
+	dX_t^3 =
+\frac{\alpha_2 + 1 - \beta_2 X_t^3}{X_t^1}\,dt
++
+\sqrt{
+2\gamma_2 \frac{X_t^3}{X_t^1}
+}\,dW_t^2
+\end{equation}
+
+This equation shows the dirtiness of the incoming sewage $X_t^3$. It assumes the dirtiness tries to return to the normal average level always, and the water tank $X_t^1$ acts as a shield.
+
+\smallskip
+
+The first term of the equation tells us how the dirtiness gets pulled back to the baseline level when it gets very high or low, since:
+
+\begin{equation*}
+	\alpha_2 + 1 - \beta_2 X_t^3 = \beta_2\left(\frac{\alpha_2 + 1}{\beta_2} - X_t^3\right)
+\end{equation*}
+
+And this is with respect to the tank size ($X_t^1$), because a larger tank size will be able to slow down fast erratic changes better, and dilute the big spikes. 
+
+The second part of the equation explains the randomness of the environmental noise. The square root is so that the dirt level is always possible, since it cant drop below zero. 
+
+
+
+
+
+
+\medskip
+
+
+
+
+
+\subsection{\textbf{Tank 1-2 Pollutant Concentration ($X^4$)}}
+
+
+Currently, we have the total mass of the stuff inside the tank as $M_t = X_t^1 X_t^4$ (vol x concentration). That gives us,
+
+\begin{equation*}
+	dM_t = X_t^1\,dX_t^4 + X_t^4\,dX_t^1
+\end{equation*}
+
+Change in mass is the difference between incoming and outgoing mass rate. So,
+
+\begin{equation*}
+	dM_t = \left( X_t^2 X_t^3 - X_{\text{out}} X_t^4 \right) dt
+\end{equation*}
+
+If we assume that the tank's liquid changes slowly, relative to the concentration changes, we can take $dX_t^1 \approx 0$, and $X_\text{out} \approx X_t^2$. So substituting will get us,
+
+\begin{equation}
+	dX_t^4 = (X_t^3 - X_t^4) \frac{X_t^2}{X_t^1}\,dt
+\end{equation}
+
+
+\smallskip
+
+The difference term is that when the incoming sewage is dirtier than the current water, the concentration of the tank increases. If the opposite, the concentration drops. The ratio term is called the \textbf{Turnover Rate}. It is the inverse of hydraulic retention time. When this retention time is long, the ratio will become small, and the tank will act like a smoothen out volatile inflow into a stable stream, $X_4$.
+
+
+
+
+\medskip
+
+
+
+
+
+
+
+\subsection{\textbf{Treated Pollutant Concentration ($X^4$)}}
+
+Conservation of mass gives us,
+
+\begin{equation}
+	\frac{dX^5}{dt} = \underbrace{\frac{Q}{V}(X^4 - X^5)}_{\text{Hydraulic dilution}} - \underbrace{R(X^5)}_{\text{Microbial consumption}}
+\end{equation}
+
+\smallskip
+
+where V is the reactor volume and Q is the flow.
+
+The Monod Equation for microbial consumption \cite{monodeq} is, 
+
+\begin{equation*}
+	R(X^5) = \frac{\mu_{\max} X_{\text{bacteria}}}{Y} \left( \frac{X^5}{K_s + X^5} \right)
+\end{equation*}
+
+Using Taylor series we can expand this into,
+
+\begin{align*}
+	R(X^5) &\approx R(X^*) + R'(X^*)(X^5 - X^*)\\
+	&= \underbrace{( R(X^*) - R'(X^*)X^* )}_{-a} + {R'(X^*)} X^5\\
+	&= -a + k X^5
+\end{align*}
+
+
+Let D be the diffusion rate, $D = Q/V$, and some $b \approx D + k$.
+
+\begin{align*}
+	\frac{dX^5}{dt} &= D(X^4 - X^5) - ( -a + k X^5 )\\
+	&\approx a + b(X^4 - X^5)\\
+\end{align*}
+
+\smallskip
+
+And finally,
+
+\begin{equation}
+	dX_t^5 = \left( a + b(X_t^4 - X_t^5) \right) dt
+\end{equation}
+
+
+
+
+
+
+\medskip
+
+
+
+
+
+
+
+
+\subsection*{\textbf{Set of equations}}
+
+\begin{align*}
+	dX_t^1
+&=
+\left(
+\frac{\alpha_1 + 1}{\beta_1} - X_t^2
+\right)dt
+\\[8pt]
+dX_t^2
+&=
+\left(
+\alpha_1 + 1
+-
+\beta_1 \frac{X_t^2}{X_t^1}
+\right)dt
++
+\sqrt{
+2\gamma_1 \frac{X_t^2}{X_t^1}
+}\,dW_t^1
+\\[8pt]
+dX_t^3
+&=
+\left(
+\frac{\alpha_2 + 1 - \beta_2 X_t^3}{X_t^1}
+\right)dt
++
+\sqrt{
+2\gamma_2 \frac{X_t^3}{X_t^1}
+}\,dW_t^2
+\\[8pt]
+dX_t^4
+&=
+(X_t^3 - X_t^4)
+\frac{X_t^2}{X_t^1}\,dt
+\\[8pt]
+dX_t^5
+&=
+\left(
+a + b(X_t^4 - X_t^5)
+\right)dt
+\end{align*}
+
+
+
+
+
+\medskip
+
+
+
+
+\subsection*{\textbf{Matrix Notation}}
+
+
+If we write the equations in the following form,
+
+\begin{equation*}
+	dX_t = f(X_t) dt + G(X_t) dW_t
+\end{equation*}
+
+we can write the set of equations as the sum of vectors in matrices form, such as:
+
+\begin{equation*}
+	\begin{bmatrix}
+dX^1\\
+dX^2\\
+dX^3\\
+dX^4\\
+dX^5
+\end{bmatrix}
+=
+\begin{bmatrix}
+f_1(X)\\
+f_2(X)\\
+f_3(X)\\
+f_4(X)\\
+f_5(X)
+\end{bmatrix}dt
++
+\begin{bmatrix}
+0 & 0\\
+\sqrt{2\gamma_1\frac{X^2}{X^1}} & 0\\
+0 & \sqrt{2\gamma_2\frac{X^3}{X^1}}\\
+0 & 0\\
+0 & 0
+\end{bmatrix}
+\begin{bmatrix}
+dW^1\\
+dW^2
+\end{bmatrix}
+\end{equation*}
+
+
+\smallskip
+
+We can see that only two out of the five equations have a diffusion term. So we can infer that the randomness exclusively enters through the inflow. The $X^4$ and $X^5$ become stochastic because they contain the terms with diffusion.
+
+\smallskip
+
+This system is called a \textbf{Hypoelliptic System}.
+
+
+
+
+
+
+
+\bigskip
+
+
+
+
+
+
+
+
+\section{Numerical Solving}
+
+We use Euler-Maruyama method \cite{eulermaruyama} to solve these differential equations.
+
+The interval $[0,T]$ is divided into $N$ equal steps of size,
+
+\begin{equation*}
+	\Delta t = \frac{T}{N}
+\end{equation*}
+
+and the discrete time being, $t_n = n \Delta t$.
+
+\smallskip
+
+Since Brownian Motion increments follow a normal distribution with mean $0$ and variance $\Delta t$, 
+
+\begin{align*}
+	\Delta W &= W_{t + \Delta t} - W_t \sim \mathcal{N}(0, \Delta t)\\
+	\Rightarrow \qquad \Delta W_n^k &= W_{(n+1)\Delta t}^k-W_{n\Delta t}^k\\
+	&= \sqrt{\Delta t}\,Z_n^k
+\end{align*}
+
+where $Z_n^k \sim \mathcal{N}(0,1)$
+
+
+
+\medskip
+
+
+\subsection*{\textbf{Solving the system of DE}}
+
+When applying Euler-Maruyama method to the system, it gives:
+
+\begin{equation}
+	X_{n+1}^1 = X_n^1 + \left(  \frac{\alpha+1}{\beta_1} - X_n^2  \right) \Delta t
+\end{equation}
+
+
+
+
+\begin{equation}
+\begin{aligned}
+    X_{n+1}^2
+&=
+X_n^2+
+\left(\alpha_1+1-\beta_1\frac{X_n^2}{X_n^1}\right)\Delta t
+\\
+&\quad+
+\sqrt{2\gamma_1\frac{\widetilde{X}_n^2}{\widetilde{X}_n^1}}
+\sqrt{\Delta t}\,Z_n^1
+\end{aligned}
+\end{equation}
+
+
+
+
+\begin{equation}
+\begin{aligned}
+    X_{n+1}^3
+&=
+X_n^3+
+\left(
+\frac{\alpha_2+1-\beta_2X_n^3}{X_n^1}
+\right)\Delta t
+\\
+&\quad+
+\sqrt{
+2\gamma_2\frac{\widetilde{X}_n^3}{\widetilde{X}_n^1}
+}
+\sqrt{\Delta t}\,Z_n^2
+\end{aligned}
+\end{equation}
+
+
+
+\begin{align}
+	X_{n+1}^4
+&=
+X_n^4+
+(X_n^3-X_n^4)
+\frac{X_n^2}{X_n^1}\Delta t
+\end{align}
+
+
+
+
+\begin{align}
+	X_{n+1}^5
+&=
+X_n^5+
+\left(
+a+b(X_n^4-X_n^5)
+\right)\Delta t
+\end{align}
+
+
+Since the $X^2$ and $X^3$ terms contain a random variable, if majority of their draws are negative, their values can go to negative. While solving, these negative values can cause imaginary values. So, we set hard boundaries to the values:
+
+\begin{align*}
+	\widetilde{X}_n^i&=\max(X_n^i,0)\\
+\widetilde{X}_n^1&=\max(X_n^1,\epsilon)
+\end{align*}
+
+\smallskip
+
+where $\epsilon = 10^{-4}$. This prevents zero in the denominator as well.
 
 
 
@@ -327,38 +679,20 @@ So combining them both, we get:
 
 
 
+\clearpage
+
+\begin{thebibliography}{00}
 
 
+\bibitem{cjharris} Harris, C. J. (1977) ‘Modelling, simulation and control of stochastic systems with applications in wastewater treatment’, International Journal of Systems Science, 8(4), pp. 393–411. doi: 10.1080/00207727708942050.
+
+\bibitem{wfeller} Feller, W. (1951). Two singular diffusion problems. Annals of Mathematics, 54(1), 173–182
+
+\bibitem{monodeq} Metcalf \& Eddy, Inc., et al. \textit{Wastewater Engineering: Treatment and Resource Recovery}. 5th ed., McGraw-Hill Education, 2014.
 
 
+\bibitem{eulermaruyama} Maruyama, Gisiro. "On the convergence of numerical schemes for ordinary stochastic differential equations." Mathematical Reviews 16 (1955): 1127.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-%\break
-
-%\begin{thebibliography}{00}
-%
-%
-%\bibitem{cjharris} HARRIS, C. J. (1977) ‘Modelling, simulation and control of stochastic systems with applications in wastewater treatment’, International Journal of Systems Science, 8(4), pp. 393–411. doi: 10.1080/00207727708942050.
-%\bibitem{wfeller} Feller, W. (1951). Two singular diffusion problems. Annals of Mathematics, 54(1), 173–182
-%
-%\end{thebibliography}
+\end{thebibliography}
 
 \end{document}
