@@ -122,7 +122,7 @@ Currently, to battle wastewater that major cities produce on a daily basis in hu
 
 \begin{figure}[htbp] 
     \centering
-    \includegraphics[width=1.0\linewidth]{wastetanks_flowchart.png} 
+    \includegraphics[width=1.0\linewidth]{img/wastetanks_flowchart.png} 
     \caption{Water Treatment Plant Flowchart.}
     \label{fig:waste-flowchart}
 \end{figure}
@@ -643,6 +643,9 @@ a+b(X_n^4-X_n^5)
 \end{align}
 
 
+\smallskip
+
+
 Since the $X^2$ and $X^3$ terms contain a random variable, if majority of their draws are negative, their values can go to negative. While solving, these negative values can cause imaginary values. So, we set hard boundaries to the values:
 
 \begin{align*}
@@ -653,6 +656,153 @@ Since the $X^2$ and $X^3$ terms contain a random variable, if majority of their 
 \smallskip
 
 where $\epsilon = 10^{-4}$. This prevents zero in the denominator as well.
+
+
+
+
+
+
+
+\bigskip
+
+
+
+
+
+
+
+
+\section{Simulation and Data Analysis}
+
+The initial values of the simulation are as follows:
+\smallskip
+
+\begin{itemize}
+	\item Number of Monte-Carlo paths: $N_{\text{paths}} = 3000$
+	\item Runtime: $T = 5 days$
+	\item Step size: $\Delta t = 0.0025 days$
+	\item Time steps: $2000$
+\end{itemize}
+
+\smallskip
+
+and the initial parameters are set as,
+
+\begin{align*}
+&\alpha_1=1.0,
+&&\beta_1=1.2,
+&&\gamma_1=0.15,\\
+&\alpha_2=1.0,
+&&\beta_2=1.0,
+&&\gamma_2=0.20,\\
+&a=0.05,
+&&b=1.50
+\end{align*}
+
+
+\smallskip
+
+
+The initial state vector is:
+
+\begin{equation*}
+	X_0 = [10.0, \frac{\alpha_1 + 1}{\beta_1}, 5.0, 4.0, 1.0]^T
+\end{equation*}
+
+
+And $(\alpha_1 + 1)/\beta_1$ turned out to be $\approx1.667$ for the initial condition. Hence, we have
+
+\begin{equation*}
+X_0=[10.0,\;1.667,\;5.0,\;4.0,\;1.0]^T	
+\end{equation*}
+
+
+
+
+\begin{figure}[htbp] 
+    \centering
+    \includegraphics[width=1.0\linewidth]{img/input_dynamics.pdf} 
+    \caption{\textbf{Input Dynamics}: Graph of the erratic inflow rate ($X_t^2$) and pollutant concentration ($X_t^3$)}
+    \label{fig:input-dynamics}
+\end{figure}
+
+
+
+\begin{figure}[htbp] 
+    \centering
+    \includegraphics[width=1.0\linewidth]{img/equalization_effect.pdf} 
+    \caption{\textbf{Equalization Effect}: Graph comparing the erratic inflow of dirt ($X_t^3$), and the smooth equalized output from Tank 1 ($X_t^4$) into Tank 2}
+    \label{fig:equalization_effect}
+\end{figure}
+
+
+
+\begin{figure}[htbp] 
+    \centering
+    \includegraphics[width=1.0\linewidth]{img/effluent_quality.pdf} 
+    \caption{\textbf{Effluent Quality}: Graph between pollutant concentration and time. The smooth line for all the iterations (grey lines) indicates the proper working of the reactor}
+    \label{fig:effluent_quality}
+\end{figure}
+
+
+
+\begin{figure}[htbp] 
+    \centering
+    \includegraphics[width=1.0\linewidth]{img/reduction_ratio.pdf} 
+    \caption{\textbf{Reduction Ratio}: Graph of the instant pathwise ratio $\mathbb{E}[X_t^5/X_t^3]$ }
+    \label{fig:reduction_ratio}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
