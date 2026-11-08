@@ -746,6 +746,20 @@ X_0=[10.0,\;1.667,\;5.0,\;4.0,\;1.0]^T
 
 
 
+
+
+
+From the simulation, we are able to see the working of equalisation tank. Figure \ref{fig:equalization_effect} shows the random erratic inflow over five days in red, and the outflow from tank 1 in blue. The equalized flow is smooth, as compared to the inflow, showing the working of the tank 1.
+
+\smallskip
+
+Figure \ref{fig:effluent_quality} shows an interesting graph. It is between effluent concentration and time, and it is shown to rise until day 3, and it falls. This is because, the pollutant when first added to the tank, the bacterial colony struggle to keep up with the flow, so the concentration increases, until it reaches a peak, where the inflow concentration is relatively lower, and the bacterial colony catches up. The grey lines are a handful of the 3000 simulations performed, and all of those have smooth curves without any jagged edges. This shows the proper working of the treatment plant, with minimal to no spikes. 
+
+
+
+
+
+
 \begin{figure}[htbp] 
     \centering
     \includegraphics[width=1.0\linewidth]{img/reduction_ratio.pdf} 
@@ -753,14 +767,22 @@ X_0=[10.0,\;1.667,\;5.0,\;4.0,\;1.0]^T
     \label{fig:reduction_ratio}
 \end{figure}
 
+\smallskip
 
 
+From Figure \ref{fig:reduction_ratio}, we could notice that the ratio $\mathbb{E}[X_t^5/X_t^3]$ goes above 1 at around day 2, which would mean that the plant is generating more pollution than it takes, and it could be explained by the following:
 
-
-
-
-
-
+\begin{itemize}
+	\item \textbf{Water Lag:} The treatment plant contains a water lag, so at a specific point in time, the outflowing water is not from the same inflow at the same time. The polluted water stays in the system for hours, or even days.
+	\item \textbf{Jensen's Inequality:} 
+		\begin{equation*}
+			   \mathbb{E}\left[\frac{X^5}{X^3}\right]\neq\frac{\mathbb{E}[X^5]}{\mathbb{E}[X^3]}
+		\end{equation*}
+		
+		\smallskip
+		
+		If we take just $X^3$, the function is $f(x) = 1/x$, which is convex for $x>0$, and so, when the inflow concentration is near zero, the ratio shoots up that skews the sample mean.
+\end{itemize}
 
 
 
