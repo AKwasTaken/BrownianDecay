@@ -203,7 +203,7 @@ This widely used model invented by CJ Harris \cite{cjharris} , assumes the waste
         \hline
         $X_t^4$ & Pollutant concentration flowing from Tank 1 to Tank 2 & $\mathrm{mg/L}$ \\
         \hline
-        $X_t^5$ & Pollutant concentration flowing out of Tank 1 & $\mathrm{mg/L}$ \\
+        $X_t^5$ & Pollutant concentration flowing out of Tank 2 & $\mathrm{mg/L}$ \\
         \hline
     \end{tabular}
 \end{table}
@@ -342,9 +342,10 @@ The second part of the equation explains the randomness of the environmental noi
 
 Currently, we have the total mass of the stuff inside the tank as $M_t = X_t^1 X_t^4$ (vol x concentration). That gives us,
 
-\begin{equation*}
-	dM_t = X_t^1\,dX_t^4 + X_t^4\,dX_t^1
-\end{equation*}
+\begin{align*}
+	dM_t &= d(X^1 X^4)_t\\
+	&= X_t^1\,dX_t^4 + X_t^4\,dX_t^1 + d\langle X^1, X^4 \rangle_t
+\end{align*}
 
 Change in mass is the difference between incoming and outgoing mass rate. So,
 
@@ -352,7 +353,7 @@ Change in mass is the difference between incoming and outgoing mass rate. So,
 	dM_t = \left( X_t^2 X_t^3 - X_{\text{out}} X_t^4 \right) dt
 \end{equation*}
 
-If we assume that the tank's liquid changes slowly, relative to the concentration changes, we can take $dX_t^1 \approx 0$, and $X_\text{out} \approx X_t^2$. So substituting will get us,
+If we assume that the tank's liquid changes slowly, relative to the concentration changes, we can take $dX_t^1 \approx 0$, and $X_\text{out} \approx X_t^2$. And since $X^1$ has zero diffusion,  $d\langle X^1, X^4 \rangle_t = 0$. So substituting these will get us,
 
 \begin{equation}
 	dX_t^4 = (X_t^3 - X_t^4) \frac{X_t^2}{X_t^1}\,dt
@@ -374,7 +375,7 @@ The difference term is that when the incoming sewage is dirtier than the current
 
 
 
-\subsection{\textbf{Treated Pollutant Concentration ($X^4$)}}
+\subsection{\textbf{Treated Pollutant Concentration ($X^5$)}}
 
 Conservation of mass gives us,
 
@@ -581,7 +582,7 @@ where $Z_n^k \sim \mathcal{N}(0,1)$
 When applying Euler-Maruyama method to the system, it gives:
 
 \begin{equation}
-	X_{n+1}^1 = X_n^1 + \left(  \frac{\alpha+1}{\beta_1} - X_n^2  \right) \Delta t
+	X_{n+1}^1 = X_n^1 + \left(  \frac{\alpha_1+1}{\beta_1} - X_n^2  \right) \Delta t
 \end{equation}
 
 
@@ -679,8 +680,8 @@ The initial values of the simulation are as follows:
 
 \begin{itemize}
 	\item Number of Monte-Carlo paths: $N_{\text{paths}} = 3000$
-	\item Runtime: $T = 5 days$
-	\item Step size: $\Delta t = 0.0025 days$
+	\item Runtime: $T = 5$ days
+	\item Step size: $\Delta t = 0.0025$ days
 	\item Time steps: $2000$
 \end{itemize}
 
@@ -941,7 +942,7 @@ The cross correlation between $X_t^3$ and $X_t^4$ is:
 
 
 
-Figure \ref{fig:cross_correlation_lag} shows the peak is at $\tau* = 0.10 days$, which is about 2.4 hours, and the corrrelation of $0.78$.
+Figure \ref{fig:cross_correlation_lag} shows the peak is at $\tau* = 0.10$ days, which is about 2.4 hours, and the corrrelation of $0.78$.
 
 \smallskip
 
@@ -1036,7 +1037,12 @@ We can see that at around $t = 1$ days, the survival drops to zero, and failure 
 
 
 
+\bigskip
 
+
+
+
+\section{A Better Predictor Model}
 
 
 
