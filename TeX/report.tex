@@ -948,6 +948,35 @@ Figure \ref{fig:cross_correlation_lag} shows the peak is at $\tau* = 0.10 days$,
 From this we can infer that the retention delay is 2.4 hours, before the inflow sewage water goes to tank 2.
 
 
+\medskip
+
+
+
+\subsection{\textbf{Regulations and First Hitting Time analysis}}
+
+To stop more pollution, there exist environmental regulations that set an upper limit on the outflow pollutant concentration. In our simulation, the limit is set to $C_{\text{crit}}=3.5\text{ mg/L}$. 
+
+\smallskip
+
+
+
+
+
+
+\begin{figure}[htbp] 
+    \centering
+    \includegraphics[width=1.0\linewidth]{img/first_hitting_time_density.pdf} 
+    \caption{\textbf{FHT Density}}    
+    \label{fig:first_hitting_time_density}
+\end{figure}
+
+
+\begin{figure}[htbp] 
+    \centering
+    \includegraphics[width=1.0\linewidth]{img/reliability_and_violation_risk.pdf} 
+    \caption{\textbf{Reliability and Violation}}    
+    \label{fig:reliability_and_violation_risk}
+\end{figure}
 
 
 
@@ -955,33 +984,52 @@ From this we can infer that the retention delay is 2.4 hours, before the inflow 
 
 
 
+\subsubsection*{\textbf{First Hitting Time (FHT)}}
+
+Let $\tau$ be the first time the plant crosses the threshold.
+
+\begin{equation*}
+	\tau
+=
+\inf\{t>0:X_t^5\geq C_{\text{crit}}\}
+\end{equation*}
+
+
+\smallskip
+
+Figure \ref{fig:first_hitting_time_density} shows the probability density of $\tau$ across the simulation. It shows a bell curve, peaking at $\tau \approx 1.05$ days
+
+
+\medskip
 
 
 
+\subsubsection*{\textbf{Survival and Failure}}
+
+The figure \ref{fig:reliability_and_violation_risk} shows the plant's reliability over time.
+
+\smallskip
+
+We have the survival function,
+
+\begin{align*}
+	S(t)&=\mathbb{P}(\tau>t)\\
+	&=\mathbb{P}\left(\sup_{0\leq s\leq t}X_s^5<C_{\text{crit}}
+\right)
+\end{align*}
+
+\smallskip
+
+and failure probability,
+
+\begin{align*}
+	F(t) &= 1-S(t)\\
+	&=\mathbb{P}(\tau \leq t)
+\end{align*}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+We can see that at around $t = 1$ days, the survival drops to zero, and failure shoots to 100\%. It shows that under large inflow loading, the regulation is broken. So from the analysis, we can infer that the plant fails for certain if the buffer capacity is insufficient for the inflow.
 
 
 
