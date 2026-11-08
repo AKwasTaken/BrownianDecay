@@ -784,6 +784,363 @@ From Figure \ref{fig:reduction_ratio}, we could notice that the ratio $\mathbb{E
 		If we take just $X^3$, the function is $f(x) = 1/x$, which is convex for $x>0$, and so, when the inflow concentration is near zero, the ratio shoots up that skews the sample mean.
 \end{itemize}
 
+\smallskip
+
+To battle these effects, the figure \ref{fig:cumulative_mass_removal_efficiency} and \ref{fig:macro_concentration_drop_ratio} shows new metrics. 
+
+
+
+
+
+
+\begin{figure}[htbp] 
+    \centering
+    \includegraphics[width=1.0\linewidth]{img/cumulative_mass_removal_efficiency.pdf} 
+    \caption{\textbf{Cumulative Mass Removal Efficiency}}    \label{fig:cumulative_mass_removal_efficiency}
+\end{figure}
+
+
+
+
+
+
+
+
+
+\medskip
+
+\subsection{\textbf{Cumulative Mass Removal Efficiency ($\eta_{\text{mass}}(t)$)}}
+
+The formula is given by,
+
+\begin{equation}
+	\eta_{\text{mass}}(t)
+=
+1-
+\frac{
+\int_0^t X_s^5X_s^2\,ds
+}{
+\int_0^t X_s^3X_s^2\,ds
+}
+\end{equation}
+
+
+
+
+Figure \ref{fig:cumulative_mass_removal_efficiency} shows the cumulative mass removal starts at around 80\%, then gradually drops to around 6-8\% as the plant stabilises. The ratio is much smaller than expected, but this only tracks the plant's efficiency in such chaotic conditions. So this is pretty much accurate with physical systems as a worst case scenario.
+
+
+
+
+
+\begin{figure}[htbp] 
+    \centering
+    \includegraphics[width=1.0\linewidth]{img/macro_concentration_drop_ratio.pdf} 
+    \caption{\textbf{Macro Concentration Drop Ratio}}    
+    \label{fig:macro_concentration_drop_ratio}
+\end{figure}
+
+
+\medskip
+
+
+\subsection{\textbf{Ratio of Expectations}}
+
+The ratio is given by:
+
+\begin{equation}
+	\bar{R}(t)
+=
+\frac{\mathbb{E}[X_t^5]}
+{\mathbb{E}[X_t^3]}
+\end{equation}
+
+
+Figure \ref{fig:macro_concentration_drop_ratio} shows that the ratio increases smoothly from $0.2$ to around $1.3$ during the low-inflow time. 
+
+
+
+
+
+
+
+
+
+
+\medskip
+
+
+
+
+\subsection{\textbf{Variance Damping and Retention}}
+
+This is to quantify how well the tank stabilises incoming noise. We do that by analysing the transmission of variance and the time lag.
+
+
+
+\begin{figure}[htbp] 
+    \centering
+    \includegraphics[width=1.0\linewidth]{img/variance_damping_ratio.pdf} 
+    \caption{\textbf{Variance Damping Ratio}}    
+    \label{fig:variance_damping_ratio}
+\end{figure}
+
+
+\begin{figure}[htbp] 
+    \centering
+    \includegraphics[width=1.0\linewidth]{img/cross_correlation_lag.pdf} 
+    \caption{\textbf{Cross Correlation Lag}}    
+    \label{fig:cross_correlation_lag}
+\end{figure}
+
+
+\smallskip
+
+
+\subsubsection*{\textbf{Variance Transmission Ratio ($\rho_{\text{damp}}(t)$)}}
+
+
+The variance ratio between tank 1 treated water and raw wastewater:
+
+\begin{equation*}
+	\rho_{\text{damp}}(t)
+=
+\frac{\operatorname{Var}(X_t^4)}
+{\operatorname{Var}(X_t^3)}
+\end{equation*}
+
+
+
+From figure \ref{fig:variance_damping_ratio}, we can see that the ratio starts from zero and climbs to around 0.85 or 85\% as the variance accumulates. This shows that the Tank 1 absorbs around 15-20\% of the raw variance under constant noise.
+
+
+
+\smallskip
+
+\subsubsection*{\textbf{Cross-Correlation Lag}}
+
+Since tank 1 stores liquid, the traces of the previous batch fluid will have changes in the new batches of the inflow.
+
+\smallskip
+
+The cross correlation between $X_t^3$ and $X_t^4$ is:
+
+
+
+\begin{equation*}
+	R_{34}(\tau)
+=
+\frac{
+\mathbb{E}[
+(X_t^3-\mu_3)(X_{t+\tau}^4-\mu_4)
+]
+}{
+\sigma_3\sigma_4
+}
+\end{equation*}
+
+
+
+Figure \ref{fig:cross_correlation_lag} shows the peak is at $\tau* = 0.10 days$, which is about 2.4 hours, and the corrrelation of $0.78$.
+
+\smallskip
+
+From this we can infer that the retention delay is 2.4 hours, before the inflow sewage water goes to tank 2.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
