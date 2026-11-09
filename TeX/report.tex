@@ -304,6 +304,7 @@ So combining them both, we get:
 The equation that determines the dirtiness rate:
 
 \begin{equation}
+\label{eq:Xt3}
 	dX_t^3 =
 \frac{\alpha_2 + 1 - \beta_2 X_t^3}{X_t^1}\,dt
 +
@@ -356,6 +357,7 @@ Change in mass is the difference between incoming and outgoing mass rate. So,
 If we assume that the tank's liquid changes slowly, relative to the concentration changes, we can take $dX_t^1 \approx 0$, and $X_\text{out} \approx X_t^2$. And since $X^1$ has zero diffusion,  $d\langle X^1, X^4 \rangle_t = 0$. So substituting these will get us,
 
 \begin{equation}
+\label{eq:Xt4}
 	dX_t^4 = (X_t^3 - X_t^4) \frac{X_t^2}{X_t^1}\,dt
 \end{equation}
 
@@ -414,6 +416,7 @@ Let D be the diffusion rate, $D = Q/V$, and some $b \approx D + k$.
 And finally,
 
 \begin{equation}
+\label{eq:Xt5}
 	dX_t^5 = \left( a + b(X_t^4 - X_t^5) \right) dt
 \end{equation}
 
@@ -673,7 +676,7 @@ where $\epsilon = 10^{-4}$. This prevents zero in the denominator as well.
 
 
 
-\section{Simulation and Data Analysis}
+\section{Simulation and Data Analysis\label{section4}}
 
 The initial values of the simulation are as follows:
 \smallskip
@@ -1045,54 +1048,112 @@ We can see that at around $t = 1$ days, the survival drops to zero, and failure 
 \section{A Better Predictor Model}
 
 
+In Section \ref{section4}, the model used by Harris does the buffering of noise reduction and smoothening the inflow perfectly, but fails at being efficient, since it is a open-loop model. The model fails under an inflow shock, as the passage between the two tanks is passive, and when the reactor washes out, it breaches the regulation limits. To battle this, we can have an active feedback control shielding to the model.
 
 
 
 
 
 
+\smallskip
 
+\subsection{\textbf{Mathematical Formulation}}
+	
+In the passive model, the mass exchange rate equation is,
 
+\begin{equation*}
+	dX_t^5 = \left(a + b(X_t^4 - X_t^5)\right) dt
+\end{equation*}
 
+Here, $b\approx Q/V + k$ is a constant dilution rate. But for our new active model, we can have a variable-speed 'valve' that regulates the flow from tank 1 to tank 2, with respect to the current reactor stress. It is regulated by a parameter, $u(X_t^5) \in [u_{\min}, 1.0]$:
 
+\begin{equation}
+	u(X_t^5) = u_{\min} + \frac{1 - u_{\min}}{1 + \exp\left(k_c (X_t^5 - C_{\text{target}})\right)}
+\end{equation}
 
+\smallskip
 
 
+where $C_\text{target}$ is a value that is below the regulation limits ($C_\text{crit}=3.5$), hence $C_\text{target}=2.6$ mg/L. $k_c = 6.0$ is gain, and $u_{\text{min}} = 0.05$ is to maintain circulation to avoid stagnant water.
 
+\smallskip
 
+So the equation \ref{eq:Xt5} becomes,
 
+\begin{equation}
+	dX_t^5 = \left(a + b \cdot u(X_t^5)(X_t^4 - X_t^5)\right) dt
+\end{equation}
 
 
+\smallskip
 
+When the plant is working properly, $X^5 << C_\text{target}$, so $u(X_t^5)\approx 1$. And when the plant is struggling and $X^5\rightarrow C_\text{target}$, the controller throttles the flow, and gives enough time for the bacteria in tank 2 to sufficiently digest the pollutants.
 
 
+\medskip
 
 
 
 
+\subsection{\textbf{Simulation and Analysis}}
 
+We simulated the model with $N_\text{paths} = 2000$ and the same $5$ day period.
 
 
 
+\begin{figure*}[t]
+    \centering
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/control_effluent_comparison.pdf}
+        \caption{Control Effluent Comparison}
+        \label{fig:control_effluent_comparison}
+    \end{minipage}\hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/control_survival_comparison.pdf}
+        \caption{Control Survival Comparison}
+        \label{fig:control_survival_comparison}
+    \end{minipage}\hfill
+    \begin{minipage}{0.32\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{img/control_efficiency_comparison.pdf}
+        \caption{Control Efficiency Comparison}
+        \label{fig:control_efficiency_comparison}
+    \end{minipage}
+\end{figure*}
 
 
 
 
+\smallskip
 
 
+Figure \ref{fig:control_effluent_comparison} shows the threshold being crossed by the passive model, but held by the active model.
 
+\smallskip
 
+From Figure \ref{fig:control_survival_comparison} we can see that the failure probability is drastically reduced from just one day, and is holding pretty well, with maintaining an overall 5-day survival rate over 80\%.
 
+\smallskip
 
+The Graph \ref{fig:control_efficiency_comparison} shows the cumulative mass removal efficiency, given by the formula:
 
+\begin{equation*}
+	\eta_{\text{mass}}(t) = 1 - \frac{\int_0^t u(X_s^5) X_s^2 X_s^5 \, ds}{\int_0^t X_s^2 X_s^3 \, ds}
+\end{equation*}
 
 
 
+\smallskip
 
+The passive model plummets to an efficiency of 5-6\%, but the active model has an initial dip, but goes to a stable 90\%, which is shockingly perfect. 
 
 
+\smallskip
 
 
+The overly high efficiency is not because the plant is performing very well, but the flow from tank 1 to tank 2 is throttled very much, that the water stays inside the first tank for a while. This causes an extreme pressure build up, but since we are simulation an inflow shock, a temporary upstream containment for the extra waste would be sufficient. The catch to this 'near perfect' model is that it performs very slow.
 
 
 
@@ -1119,150 +1180,7 @@ We can see that at around $t = 1$ days, the survival drops to zero, and failure 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\clearpage
+\newpage
 
 \begin{thebibliography}{00}
 
@@ -1275,6 +1193,9 @@ We can see that at around $t = 1$ days, the survival drops to zero, and failure 
 
 
 \bibitem{eulermaruyama} Maruyama, Gisiro. "On the convergence of numerical schemes for ordinary stochastic differential equations." Mathematical Reviews 16 (1955): 1127.
+
+\bibitem{kloedenplaten} Kloeden, P. E., \& Platen, E. (1992). \textit{Numerical Solution of Stochastic Differential Equations}. Springer-Verlag, Berlin, pp. 263--266.
+
 
 \end{thebibliography}
 
