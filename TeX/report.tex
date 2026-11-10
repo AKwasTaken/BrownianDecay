@@ -53,6 +53,42 @@
 
 
 
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{algorithm}
+
+
+\definecolor{codegreen}{rgb}{0.18, 0.45, 0.18}
+\definecolor{codegray}{rgb}{0.40, 0.40, 0.40}
+\definecolor{codepurple}{rgb}{0.55, 0.10, 0.45}
+\definecolor{codeblue}{rgb}{0.00, 0.25, 0.70}
+
+\lstdefinestyle{pythonstyle}{
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{codeblue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\scriptsize,    
+    breaklines=true,
+    breakatwhitespace=true,
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=7pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    tabsize=2,
+    frame=none,                       
+    backgroundcolor={},               
+    xleftmargin=1.5em,
+    xrightmargin=0.5em,
+    aboveskip=1em,
+    belowskip=1em
+}
+
+\lstset{style=pythonstyle}
+
+
+
 
 
 
@@ -158,7 +194,7 @@ Bio-degradation relies on non-linear kinetics, like the Monod Equation:
 
 \smallskip
 
-This system assumes smooth deterministic flow of the pollutant concentration. Since this function is concave ($\mu''(S)<0$), the predicted value will usually be "better" than the measured value, and will only provide a "Best Case" scenario, which is basically useless as it is very unlikely to happen.
+This method assumes a smooth flow of the pollutant concentration. Since this function is concave ($\mu''(S)<0$), the predicted value will usually be "better" than the measured value, and will only provide a "Best Case" scenario, which is basically useless as it is very unlikely to happen.
 
 \medskip
 
@@ -272,14 +308,14 @@ We use the Cox-Ingersoll-Ross (CIR) or Feller square-root diffusion model \cite{
 
 \smallskip
 
-The boundary conditions at $X_t^2 \to 0$ when inflow stops\footnote{While the boundary condition of strict positive drift is a physical anomaly (since we literally cannot have zero inflow), it physically represents an immense pressure build-up somewhere upstream, and computationally ensures the non-negativity of the state variable during simulation.} are:
+The boundary conditions at $X_t^2 \to 0$ when inflow stops\footnote{While the boundary condition of strict positive drift is a physical anomaly (since we literally cannot have zero inflow), it represents an immense pressure build-up somewhere upstream, and holds the non-negativity (for computation purposes) of the state variable during simulation.} are:
 
 \begin{itemize}
 	\item The diffusion coefficient becomes zero, so no random noise in the system.
 	\item The drift remains strictly positive, $(\alpha_1 + 1)dt > 0$.
 \end{itemize}
 
-So combining them both, we get:
+From this, we have:
 \begin{equation}
 \label{eq:Xt2}
 	dX_{t}^{2}=\left(\alpha _{1}+1-\beta _{1}\frac{X_{t}^{2}}{X_{t}^{1}}\right)dt+\sqrt{2\gamma _{1}\frac{X_{t}^{2}}{X_{t}^{1}}}dW_{t}^{1}
@@ -301,7 +337,7 @@ So combining them both, we get:
 \subsection{\textbf{Inflow Dirtiness $X^3$}}
 
 
-The equation that determines the dirtiness rate:
+The Dirtiness rate is determined by the following equation:
 
 \begin{equation}
 \label{eq:Xt3}
@@ -723,6 +759,43 @@ X_0=[10.0,\;1.667,\;5.0,\;4.0,\;1.0]^T
 
 
 
+
+\begin{algorithm}[htbp]
+\caption{Euler-Maruyama Discretization Scheme}
+\label{alg:euler_maruyama}
+\begin{lstlisting}[language=Python]
+X = np.zeros((5, N_steps + 1, N_paths))
+X[:, 0, :] = np.array([X1_0, X2_0, 
+                       X3_0, X4_0, 
+                       X5_0])[:, None]
+
+for n in range(N_steps):
+    x1 = np.maximum(X[0, n, :], 1e-4)
+    x2 = np.maximum(X[1, n, :], 0.0)
+    x3 = np.maximum(X[2, n, :], 0.0)
+    x4, x5 = X[3, n, :], X[4, n, :]
+
+    Z1 = np.random.normal(0.0, 1.0, size=N_paths)
+    Z2 = np.random.normal(0.0, 1.0, size=N_paths)
+    diff2 = np.sqrt(2.0 * gamma1 * x2 / x1) * sq_dt * Z1
+    diff3 = np.sqrt(2.0 * gamma2 * x3 / x1) * sq_dt * Z2
+
+    X[0, n+1, :] = x1 + (((alpha1 + 1.0) / beta1) 
+                         - x2) * dt
+    X[1, n+1, :] = x2 + (alpha1 + 1.0 
+                         - beta1 * (x2 / x1)) * dt + diff2
+    X[2, n+1, :] = x3 + ((alpha2 + 1.0 
+                         - beta2 * x3) / x1) * dt + diff3
+    X[3, n+1, :] = x4 + ((x3 - x4) * (x2 / x1)) * dt
+    X[4, n+1, :] = x5 + (a + b * (x4 - x5)) * dt
+\end{lstlisting}
+\end{algorithm}
+
+
+
+
+
+
 \begin{figure}[htbp] 
     \centering
     \includegraphics[width=1.0\linewidth]{img/input_dynamics.pdf} 
@@ -866,6 +939,39 @@ Figure \ref{fig:macro_concentration_drop_ratio} shows that the ratio increases s
 
 
 
+\begin{algorithm}[htbp]
+\caption{Cumulative Mass Removal and Macro Ratio}
+\label{alg:mass_metrics}
+\begin{lstlisting}[language=Python]
+mass_flow_in = X[1, :, :] * X[2, :, :]
+mass_flow_out = X[1, :, :] * X[4, :, :]
+
+cum_mass_in = cumulative_trapezoid(
+    mass_flow_in, t, axis=0, initial=0.0
+)
+cum_mass_out = cumulative_trapezoid(
+    mass_flow_out, t, axis=0, initial=0.0
+)
+
+with np.errstate(divide="ignore", invalid="ignore"):
+    removal_eff = (1.0 - (cum_mass_out 
+                          / cum_mass_in)) * 100.0
+
+removal_eff[0, :] = (1.0 - (X[4, 0, :] 
+                            / X[2, 0, :])) * 100.0
+mean_eff = np.mean(removal_eff, axis=1)
+
+ratio_of_expectations = (
+    np.mean(X[4, :, :], axis=1) 
+    / np.maximum(np.mean(X[2, :, :], axis=1), 1e-4)
+)
+\end{lstlisting}
+\end{algorithm}
+
+
+
+
+
 
 
 
@@ -916,6 +1022,45 @@ The variance ratio between tank 1 treated water and raw wastewater:
 
 
 From figure \ref{fig:variance_damping_ratio}, we can see that the ratio starts from zero and climbs to around 0.85 or 85\% as the variance accumulates. This shows that the Tank 1 absorbs around 15-20\% of the raw variance under constant noise.
+
+
+
+
+
+\begin{algorithm}[htbp]
+\caption{Variance Damping and Lag}
+\label{alg:variance_damping}
+\begin{lstlisting}[language=Python]
+var_x3 = np.var(X[2, :, :], axis=1)
+var_x4 = np.var(X[3, :, :], axis=1)
+damping_ratio = var_x4 / np.maximum(var_x3, 1e-6)
+
+x3_c = X[2, :, :] - np.mean(X[2, :, :], 
+                            axis=0, keepdims=True)
+x4_c = X[3, :, :] - np.mean(X[3, :, :], 
+                            axis=0, keepdims=True)
+
+max_lag = int(N_steps / 4)
+lags = np.arange(-max_lag, max_lag + 1)
+ccorr = np.zeros(len(lags))
+
+for idx, lag in enumerate(lags):
+    if lag < 0:
+        ccorr[idx] = np.mean(x3_c[-lag:, :] 
+                             * x4_c[:lag, :])
+    elif lag > 0:
+        ccorr[idx] = np.mean(x3_c[:-lag, :] 
+                             * x4_c[lag:, :])
+    else:
+        ccorr[idx] = np.mean(x3_c * x4_c)
+
+ccorr /= (np.std(X[2, :, :]) * np.std(X[3, :, :]))
+tau_star = (lags * dt)[np.argmax(ccorr)]
+\end{lstlisting}
+\end{algorithm}
+
+
+
 
 
 
@@ -1040,6 +1185,34 @@ We can see that at around $t = 1$ days, the survival drops to zero, and failure 
 
 
 
+\begin{algorithm}[htbp]
+\caption{First Hitting Time and Survival Evaluation}
+\label{alg:fht_survival}
+\begin{lstlisting}[language=Python]
+C_crit = 3.5
+
+breach_mask = X[4, :, :] >= C_crit
+has_breached = np.any(breach_mask, axis=0)
+
+first_breach_idx = np.argmax(breach_mask, axis=0)
+fht_values = t[first_breach_idx[has_breached]]
+
+running_max_x5 = np.maximum.accumulate(
+    X[4, :, :], axis=0
+)
+p_cumulative_breach = np.mean(
+    running_max_x5 >= C_crit, axis=1
+)
+survival_function = 1.0 - p_cumulative_breach
+\end{lstlisting}
+\end{algorithm}
+
+
+
+
+
+
+
 \bigskip
 
 
@@ -1098,6 +1271,45 @@ When the plant is working properly, $X^5 << C_\text{target}$, so $u(X_t^5)\appro
 \subsection{\textbf{Simulation and Analysis}}
 
 We simulated the model with $N_\text{paths} = 2000$ and the same $5$ day period.
+
+
+
+
+
+
+\begin{algorithm}[htbp]
+\caption{Active Retention Throttling Controller}
+\label{alg:active_controller}
+\begin{lstlisting}[language=Python]
+for n in range(N_steps):
+    Z1 = np.random.normal(0, 1, N_paths)
+    Z2 = np.random.normal(0, 1, N_paths)
+
+    x1_c, x2_c, x3_c, x4_c, x5_c = X_ctrl[:, n, :]
+    x1_ct = np.maximum(x1_c, 1e-4)
+    x2_ct = np.maximum(x2_c, 0.0)
+    x3_ct = np.maximum(x3_c, 0.0)
+
+    u = 0.05 + 0.95 / (1.0 + np.exp(k_c * (x5_c - C_target)))
+
+    dX1_c = (((alpha1 + 1.0) / beta1) - x2_c) * dt
+    dX2_c = ((alpha1 + 1.0 - beta1 * (x2_c / x1_ct)) * dt
+             + np.sqrt(2 * gamma1 * x2_ct / x1_ct) * sq_dt * Z1)
+    dX3_c = (((alpha2 + 1.0 - beta2 * x3_c) / x1_ct) * dt
+             + np.sqrt(2 * gamma2 * x3_ct / x1_ct) * sq_dt * Z2)
+    dX4_c = (x3_c - x4_c) * (x2_c / x1_ct) * dt
+    dX5_c = (a + b * u * (x4_c - x5_c)) * dt
+
+    X_ctrl[:, n+1, :] = [
+        x1_c + dX1_c, x2_c + dX2_c, x3_c + dX3_c,
+        x4_c + dX4_c, x5_c + dX5_c
+    ]
+\end{lstlisting}
+\end{algorithm}
+
+
+
+
 
 
 
