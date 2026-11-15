@@ -100,7 +100,8 @@
 
 \title{%
   {\huge\textls[40]{\scshape\MakeUppercase{Modeling of a Two-Stage\\ Biological Waste Treatment Plant}}}\\[0.6ex]
-  {\footnotesize\textls[50]{\scshape\MakeLowercase{Course Project: Applied Stochastic Analysis (I2M411/MAT4511)}}}
+  {\footnotesize\textls[50]{\scshape\MakeLowercase{Course Project: Applied Stochastic Analysis (I2M411/MAT4511)}}}\\[-1.4ex]
+  {\footnotesize\textls[50]{\scshape\MakeLowercase{Submitted to: \textbf{Prof. Utpal Manna}}}}
   \thanks{Project on: \url{https://github.com/AKwasTaken/BrownianDecay}}
 }
 
@@ -1097,7 +1098,7 @@ The cross correlation between $X_t^3$ and $X_t^4$ is:
 
 
 
-Figure \ref{fig:cross_correlation_lag} shows the peak is at $\tau* = 0.10$ days, which is about 2.4 hours, and the corrrelation of $0.78$.
+Figure \ref{fig:cross_correlation_lag} shows the peak is at $\tau^* = 0.10$ days, which is about 2.4 hours, and the corrrelation of $0.78$.
 
 \smallskip
 
@@ -1414,7 +1415,7 @@ The model from 1977 developed by C J Harris is a really good starting point in u
 	\item \textbf{Solution:} People now add spikes called \textbf{Poisson Jump Process} ($dN_t$) with the brownian motion, which creates a new diffusion model,
 
 \begin{equation*}
-	dX_t^3 = \underbrace{dt}_{\text{Normal Drift}} + \underbrace{dW_t}_{\text{Wiggling}} + \underbrace{dN_t}_{Spikes}
+	dX_t^3 = \underbrace{dt}_{\text{Normal Drift}} + \underbrace{dW_t}_{\text{Wiggling}} + \underbrace{dN_t}_{\text{Spikes}}
 \end{equation*}
 
 
@@ -1465,7 +1466,7 @@ This works by having the $dN_t$ at zero at most of the times, and every once in 
 \subsection{\textbf{Better Computation}}
 
 \begin{itemize}
-	\item \textbf{Problem:} In our code, we have square roots which needs a domain of positive real numbers, else it will crash. To get around it we simply set any negative inputs to zero (np.maximum(x, 0)).
+	\item \textbf{Problem:} In our code, we have square roots which needs a domain of positive real numbers, else it will crash. To get around it we simply set any negative inputs to zero ($\texttt{np.maximum(x, 0)}$).
 
 	\item \textbf{Solution:} To avoid this artificial clipping, we could use Itô's lemma \cite{dereich} to change the variables to $Y_t = \sqrt{X_t}$. This way, it removes the square root terms completely.
 	
@@ -1488,23 +1489,33 @@ This works by having the $dN_t$ at zero at most of the times, and every once in 
 
 
 
+\bigskip
 
 
 
 
 
 
+\section{Conclusion}
 
 
 
 
+In this course project, we learned about how a bio-wastewater treatment plant under heavy loads and unpredictable flow rates, simulated using Harris's five-dimensional stochastic model
 
+From the simulation, we were able to infer the following:
 
+\begin{itemize}
+	\item \textbf{The Buffer Tank holds up (mostly):} The unstable inflow is contained in tank 1, and it holds up pretty well, acting as a shock absorbant, and slowing down the flow, reducing the flow variance by about 15-20\%.
+	\item \textbf{Tank Failure:} Even with this tank 1, the tank still fails to uphold the regulations, and fails miserably only after 1 day of this rugged flow. This happens for a lot of reasons, but the main one being the 'perfect' tank 1. It smoothens out the flow a lot, but the flow is still a lot higher, which leads to the absolute demise of our fellow bacterial soldiers.
+	\item \textbf{Fixes:} We added a feedback throttle mechanism, which throttles the flow from the tank 1 to tank 2, which fixes this increased flow problem, and gives us a significantly better result, at an efficiency around 90\%, and survival rate from 0\% to 80\%. The catch is that it needs a significantly larger tank 1 to hold in the extra sewage until the previous batch is process and the inflow slows down. A better alternative, but a costlier one indeed.
+\end{itemize}
 
 
 
 
 
+\bigskip
 
 
 
@@ -1581,7 +1592,7 @@ This works by having the $dN_t$ at zero at most of the times, and every once in 
 
 
 
-\newpage
+%\newpage
 
 \begin{thebibliography}{00}
 
