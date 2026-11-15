@@ -51,8 +51,7 @@
 
 
 
-
-
+\usepackage[hidelinks]{hyperref}
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{algorithm}
@@ -100,8 +99,9 @@
 \begin{document}
 
 \title{%
-  {\huge\textls[40]{\scshape\MakeUppercase{Biological Waste Treatment, \\Hydrology, and Indoor Air Quality}}}\\[0.6ex]
+  {\huge\textls[40]{\scshape\MakeUppercase{Modeling of a Two-Stage\\ Biological Waste Treatment Plant}}}\\[0.6ex]
   {\footnotesize\textls[50]{\scshape\MakeLowercase{Course Project: Applied Stochastic Analysis (I2M411/MAT4511)}}}
+  \thanks{Project on: \url{https://github.com/AKwasTaken/BrownianDecay}}
 }
 
 
@@ -123,10 +123,17 @@
 \maketitle
 
 \begin{abstract}
-This is a nice neat abstract placeholder, which will be replaced by something nice at the end.\end{abstract}
+
+To study municipal wastewater treatment plants to deal with overflows and shocks better, instead of relying on deterministic models to simulate the working conditions of the plant, we could use the methods from this paper. We discuss in detail of the five-dimensional model proposed by Harris C J in 1977 for a two tank treatment plant, which includes a buffer tank to control flow better. After analysing the 3000 Monte-Carlo Simulations, we infer that the buffer tank absorbs about $15-20\%$ of the rough inflow variance, and with a $\approx2.5$ hour lag. Regardless, the plant breaches regulations in about a day of the inflow under heavy load (passive, that too), we propose a better system that has a feedback throttle mechanism that solves* it.
+\end{abstract}
+
+\smallskip
 
 \begin{IEEEkeywords}
-There are so many keywords here!\end{IEEEkeywords}
+
+Stochastic Differential Equations, It\^o Calculus, Diffusion, Feller Square Root process, Wastewater Treatment, Euler-Maruyama Method, First Hitting Time.
+
+\end{IEEEkeywords}
 
 
 
@@ -1385,6 +1392,188 @@ The overly high efficiency is not because the plant is performing very well, but
 
 
 
+\bigskip
+
+
+\section{Recent Developments}
+
+
+
+The model from 1977 developed by C J Harris is a really good starting point in understanding how the tank works, and how it smoothens the flow, reduces the waste. but it is very outdated, at nearly 50 years old. Since then, there have been many improvements to this model, such as:
+
+
+\smallskip
+
+
+
+\subsection{\textbf{Adding Spikes to the Continuous Noise}}
+
+
+\begin{itemize}
+	\item \textbf{Problem:} In the older model, the noise comes from Standard Brownian Motion, which is continuous and not very unpredictable, unlike in real world scenarios. We would certainly face some spikes or rough flows in real life from time to time.
+	\item \textbf{Solution:} People now add spikes called \textbf{Poisson Jump Process} ($dN_t$) with the brownian motion, which creates a new diffusion model,
+
+\begin{equation*}
+	dX_t^3 = \underbrace{dt}_{\text{Normal Drift}} + \underbrace{dW_t}_{\text{Wiggling}} + \underbrace{dN_t}_{Spikes}
+\end{equation*}
+
+
+\smallskip
+
+
+This works by having the $dN_t$ at zero at most of the times, and every once in a while, there will be an instant spike in the inflow. \cite{applebaum}
+
+\end{itemize}
+
+
+\smallskip
+
+
+\subsection{\textbf{Giving Memory to Noise}} 
+
+\begin{itemize}
+	\item\textbf{Problem:} Currently the model assumes if we have a very big inflow in this exact second, the flow a while from now is totally independent of the flow now, which is not very realistic. In real conditions, when it rains heavily, it doesn't stop in just a minute, but carry on for hours.
+	
+	\item\textbf{Solution:} We use something called Coloured Noise, with a method like the Ornstein Uhlenbeck process\cite{ornstein}. This noise has momentum and retention, so once it has a spike, it stays for a realistic amount of time.
+	
+\end{itemize}
+
+
+
+\smallskip
+
+
+
+
+\subsection{\textbf{Realistic Biology}}
+
+
+\begin{itemize}
+	\item \textbf{Problem:} In this model, we simplified the bacterial process into a straight line equation $a + b(X_t^4 - X_t^5)$, but in reality it doesn't work like that. There are different kinds of bacteria that turns different stuff into different other stuff, and we have to account for all that. (For example, if one group of this bacterial works faster than the others, there will be an acid build up and they all die.)
+
+	\item \textbf{Solution:} A really nice solution to this problem is to use Anaerobic Digestion Model (ADM1)\cite{batstone2002}. The catch is that this is a massive 20+ equations model that predict bacteria processes to near perfection. To make it stochastic, randomness is applied to the growth rate and death rates of the bacteria.
+
+\end{itemize}
+
+
+
+\smallskip
+
+
+
+
+\subsection{\textbf{Better Computation}}
+
+\begin{itemize}
+	\item \textbf{Problem:} In our code, we have square roots which needs a domain of positive real numbers, else it will crash. To get around it we simply set any negative inputs to zero (np.maximum(x, 0)).
+
+	\item \textbf{Solution:} To avoid this artificial clipping, we could use Itô's lemma \cite{dereich} to change the variables to $Y_t = \sqrt{X_t}$. This way, it removes the square root terms completely.
+	
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1407,6 +1596,15 @@ The overly high efficiency is not because the plant is performing very well, but
 \bibitem{eulermaruyama} Maruyama, Gisiro. "On the convergence of numerical schemes for ordinary stochastic differential equations." Mathematical Reviews 16 (1955): 1127.
 
 \bibitem{kloedenplaten} Kloeden, P. E., \& Platen, E. (1992). \textit{Numerical Solution of Stochastic Differential Equations}. Springer-Verlag, Berlin, pp. 263--266.
+
+\bibitem{ornstein} Uhlenbeck, G. E., \& Ornstein, L. S. (1930). On the theory of the Brownian motion. \textit{Physical Review}, 36(5), 823--841. doi: 10.1103/PhysRev.36.823.
+
+\bibitem{batstone2002} Batstone, D. J., Keller, J., Angelidaki, I., Kalyuzhnyi, S. V., Pavlostathis, S. G., Rozzi, A., Sanders, W. T. M., Siegrist, H., \& Vavilin, V. A. (2002). The IWA Anaerobic Digestion Model No 1 (ADM1). \textit{Water Science and Technology}, 45(10), 65--73. doi: 10.2166/wst.2002.0292.
+
+\bibitem{applebaum} Applebaum, D. (2009). \textit{L\'evy Processes and Stochastic Calculus}. 2nd ed., Cambridge University Press.
+
+\bibitem{dereich} Dereich, S., Neuenkirch, A., \& Szpruch, L. (2012). An Euler-type method for the strong approximation of the Cox--Ingersoll--Ross process. \textit{Proceedings of the Royal Society A}, 468(2140), 1105--1115. doi: 10.1098/rspa.2011.0505.
+
 
 
 \end{thebibliography}
