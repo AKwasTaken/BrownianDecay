@@ -124,7 +124,7 @@
 \maketitle
 
 \begin{abstract}
-To study municipal wastewater treatment plants to deal with overflows and shocks better, instead of relying on deterministic models to simulate the working conditions of the plant, we use the stochastic approach in this paper. We discuss in detail the five-dimensional model proposed by Harris C J in 1977 for a two tank treatment plant, which includes a buffer tank to control flow better. After analysing 3000 Monte-Carlo Simulations, we infer that the buffer tank absorbs about $13\%$ of the incoming concentration variance, with a $\approx 10.3$ hour lag. Regardless, the plant breaches our illustrative regulatory limit ($3.5\text{ mg/L}$) in about $1.36$ days on average under heavy passive load, leaving only a $14.3\%$ survival rate. To fix this, we propose an active feedback throttle mechanism that pushes 5-day survival to $100\%$.
+To study municipal wastewater treatment plants to deal with overflows and shocks better, instead of relying on deterministic models to simulate the working conditions of the plant, we use the stochastic approach in this paper. We discuss in detail the five-dimensional model proposed by Harris C J in 1977 for a two tank treatment plant, which includes a buffer tank to control flow better. After analysing 3000 Monte-Carlo Simulations, we infer that the buffer tank absorbs about $13\%$ of the incoming concentration variance, with a $\approx 10.3$ hour lag. Regardless, the plant breaches our illustrative regulatory limit ($3.5\text{ mg/L}$) in about $1.36$ days on average under heavy passive load, leaving only a $14.3\%$ survival rate. To fix this, we propose an active feedback throttle mechanism. All $3000$ simulated paths remain below the threshold across the 5-day run, with the new method.
 \end{abstract}
 
 
@@ -831,7 +831,7 @@ From Figure \ref{fig:reduction_ratio}, we could notice that the ratio $\mathbb{E
 		
 		\smallskip
 		
-		If we take just $X^3$, the function is $f(x) = 1/x$, which is convex for $x>0$, and so, when the inflow concentration is near zero, the ratio shoots up that skews the sample mean.
+		If we take just $X^3$, the function is $f(x) = 1/x$, which is convex for $x>0$, and so, when the inflow concentration is near zero, the ratio shoots up that skews the sample mean (also with the dependencies between $X_t^5$ and $1/X_t^3$).
 \end{itemize}
 
 \smallskip
@@ -877,7 +877,7 @@ The formula is given by,
 
 
 
-Figure \ref{fig:cumulative_mass_removal_efficiency} shows the cumulative mass removal is undefined at $t=0$, and gradually settles to $22.8\%$ by day 5 as the plant stabilises. The ratio is much smaller than expected, but this only tracks the plant's efficiency in such chaotic conditions. So this is pretty much accurate with physical systems as a worst case scenario.
+Figure \ref{fig:cumulative_mass_removal_efficiency} shows the mean pathwise cumulative mass removal is undefined at $t=0$, and gradually settles to $22.8\%$ by day 5 as the plant stabilises. The ratio is much smaller than expected, but this only tracks the plant's efficiency in such chaotic conditions. So this is pretty much accurate with physical systems as a worst case scenario.
 
 
 
@@ -995,7 +995,7 @@ The variance ratio between tank 1 treated water and raw wastewater:
 
 
 
-From figure \ref{fig:variance_damping_ratio}, we can see that the ratio starts from zero and climbs to around $0.87$ or $87\%$ as the variance accumulates. This shows that the Tank 1 absorbs around $13\%$ of the raw variance under constant noise.
+From figure \ref{fig:variance_damping_ratio}, we can see that the ratio starts from zero and climbs to around $0.87$ or $87\%$ as the variance accumulates. This shows that the Tank 1 absorbs around $13\%$ of the raw inflow concentration variance under constant noise.
 
 
 
@@ -1118,7 +1118,7 @@ Let $\tau$ be the first time the plant crosses the threshold.
 
 \smallskip
 
-Figure \ref{fig:first_hitting_time_density} shows the probability density of $\tau$ across the simulation. It shows a bell curve, peaking at $\tau \approx 1.36$ days, as mean = $1.36$ days, and median = $1.28$.
+Figure \ref{fig:first_hitting_time_density} shows the probability density of $\tau$ among the $85.7\%$ of simulated paths that crossed the limits within five days. It shows a bell curve, with a conditional mean of $\tau \approx 1.36$ days and a median of $1.28$ days.
 
 
 \medskip
@@ -1207,10 +1207,10 @@ In Section \ref{section4}, the model used by Harris does the buffering of noise 
 In the passive model, the mass exchange rate equation is,
 
 \begin{equation*}
-	dX_t^5 = \left(a + b(X_t^4 - X_t^5)\right) dt
+	dX_t^5 = \left(D X_t^4 - b X_t^5 - a\right) dt
 \end{equation*}
 
-Here, $b\approx Q/V + k$ is a constant dilution rate. But for our new active model, we can have a variable-speed 'valve' that regulates the flow from tank 1 to tank 2, with respect to the current reactor stress. It is regulated by a parameter, $u(X_t^5) \in [u_{\min}, 1.0]$:
+Here, $b = D + k$ is a constant dilution rate. But for our new active model, we can have a variable-speed 'valve' that regulates the flow from tank 1 to tank 2, with respect to the current reactor stress. It is regulated by a parameter, $u(X_t^5) \in [u_{\min}, 1.0]$:
 
 \begin{equation}
 	u(X_t^5) = u_{\min} + \frac{1 - u_{\min}}{1 + \exp\left(k_c (X_t^5 - C_{\text{target}})\right)}
@@ -1264,6 +1264,8 @@ for n in range(N_steps):
 
     Z1 = rng.standard_normal(N_paths)
     Z2 = rng.standard_normal(N_paths)
+    diff2 = np.sqrt(2.0 * gamma1 * x2 / x1) * sq_dt * Z1
+    diff3 = np.sqrt(2.0 * gamma2 * x3 / x1) * sq_dt * Z2
 
     u = u_min + (1.0 - u_min) / (1.0 + np.exp(k_c * (x5 - C_target)))
     q_out = u * ((alpha1 + 1.0) / beta1) * x1
@@ -1317,14 +1319,14 @@ Figure \ref{fig:control_effluent_comparison} shows the threshold being crossed b
 
 \smallskip
 
-From Figure \ref{fig:control_survival_comparison} we can see that the failure probability is drastically reduced from just one day, and is holding pretty well, with maintaining an overall 5-day survival rate of $100\%$ (major improvement from $14.3\%$).
+From Figure \ref{fig:control_survival_comparison} we can see that the failure probability is drastically reduced, with all $3000$ simulated paths staying well below the regulations limit all over the 5-day period (a major improvement from $14.3\%$).
 
 \smallskip
 
-The Graph \ref{fig:control_efficiency_comparison} shows the cumulative mass removal efficiency, given by the formula:
+We take the nominal outflow $Q_{\text{nominal}}(s) = \frac{\alpha_1+1}{\beta_1}X_s^1$ and the actual throttled outflow $Q_{\text{actual}}(s) = u(X_s^5)Q_{\text{nominal}}(s)$, Graph \ref{fig:control_efficiency_comparison} shows the cumulative mass removal efficiency:
 
 \begin{equation*}
-	\eta_{\text{mass}}(t) = 1 - \frac{\int_0^t u(X_s^5) Q_{\text{out}}(s) X_s^5\,ds}{\int_0^t X_s^2 X_s^3 \, ds}
+	\eta_{\text{mass}}(t) = 1 - \frac{\int_0^t Q_{\text{actual}}(s) X_s^5\,ds}{\int_0^t X_s^2 X_s^3 \, ds}
 \end{equation*}
 
 
@@ -1364,7 +1366,7 @@ The overly high efficiency is not because the plant is performing very well, but
 
 
 
-The model from 1977 developed by C J Harris is a really good starting point in understanding how the tank works, and how it smoothens the flow, reduces the waste. but it is very outdated, at nearly 50 years old. Since then, there have been many improvements to this model, such as:
+The model from 1977 developed by C J Harris is a really good starting point in understanding how the tank works, and how it smoothens the flow, reduces the waste. But it is very outdated, at nearly 50 years old. Since then, there have been many improvements to this model, such as:
 
 
 \smallskip
@@ -1376,7 +1378,7 @@ The model from 1977 developed by C J Harris is a really good starting point in u
 
 \begin{itemize}
 	\item \textbf{Problem:} In the older model, the noise comes from Standard Brownian Motion, which is continuous and not very unpredictable, unlike in real world scenarios. We would certainly face some spikes or rough flows in real life from time to time.
-	\item \textbf{Solution:} People now add spikes called \textbf{Poisson Jump Process} ($dN_t$) with the brownian motion, which creates a new diffusion model,
+	\item \textbf{Solution:} People now add spikes called \textbf{Poisson Jump Process} ($dN_t$) with the brownian motion, which creates a jump-diffusion model,
 
 \begin{equation*}
 	dX_t^3 = \underbrace{f_3(X_t)\,dt}_{\text{Normal Drift}} + \underbrace{g_3(X_t)\,dW_t}_{\text{Wiggling}} + \underbrace{J\,dN_t}_{\text{Spikes}}
@@ -1415,7 +1417,7 @@ This works by having the $dN_t$ at zero at most of the times, and every once in 
 
 
 \begin{itemize}
-	\item \textbf{Problem:} In this model, we simplified the bacterial process into a straight line equation $a + b(X_t^4 - X_t^5)$, but in reality it doesn't work like that. There are different kinds of bacteria that turns different stuff into different other stuff, and we have to account for all that. (For example, if one group of this bacterial works faster than the others, there will be an acid build up and they all die.)
+	\item \textbf{Problem:} In this model, we simplified the bacterial process into a straight line equation $DX^4_t - bX^5_t - a$, but in reality it doesn't work like that. There are different kinds of bacteria that turns different stuff into different other stuff, and we have to account for all that. (For example, if one group of this bacterial works faster than the others, there will be an acid build up and they all die.)
 
 	\item \textbf{Solution:} A really nice solution to this problem is to use Anaerobic Digestion Model (ADM1)\cite{batstone2002}. The catch is that this is a massive 20+ equations model that predict bacteria processes to near perfection. To make it stochastic, randomness is applied to the growth rate and death rates of the bacteria.
 
@@ -1433,7 +1435,7 @@ This works by having the $dN_t$ at zero at most of the times, and every once in 
 \begin{itemize}
 	\item \textbf{Problem:} In our code, we have square roots which needs a domain of positive real numbers, else it will crash. To get around it we simply set any negative inputs to zero ($\texttt{np.maximum(x, 0)}$).
 
-	\item \textbf{Solution:} To avoid this artificial clipping, we could use Itô's lemma \cite{dereich} to change the variables to $Y_t = \sqrt{X_t}$. This way, it removes the square root terms completely.
+	\item \textbf{Solution:} To avoid this artificial clipping, we could use Itô's lemma \cite{dereich} to change the variables to $Y_t = \sqrt{X_t}$. This way, it replaces the root term with something that can be worked with easily, but it introduces more drift terms.
 	
 \end{itemize}
 
@@ -1464,14 +1466,14 @@ In this course project, we studied how a bio-wastewater treatment plant behaves 
 From the simulation, we were able to infer the following:
 
 \begin{itemize}
-	\item \textbf{The Buffer Tank holds up (mostly):} The unstable inflow is contained in tank 1, and it holds up pretty well, acting as a shock absorbent, slowing down the flow by a $\approx 10.3$ hour lag and reducing incoming concentration variance by about $13\%$.
+	\item \textbf{The Buffer Tank holds up (mostly):} The unstable inflow is contained in tank 1, and it holds up pretty well, acting as a shock absorbent, slowing down the flow by a $\approx 10.3$ hour lag and reducing incoming inflow concentration variance by about $13\%$.
 	\item \textbf{Tank Failure:} Even with tank 1, the passive system still fails to uphold our $3.5\text{ mg/L}$ threshold, breaching in about $1.36$ days on average with only a $14.3\%$ 5-day survival rate. It smoothens out the spikes, but the sustained load still leads to the demise of our fellow bacterial soldiers.
-	\item \textbf{Fixes:} We added a coupled feedback throttle mechanism between tank 1 and tank 2, which fixes this overload problem and boosts 5-day survival from $14.3\%$ to $100\%$, with cumulative mass removal reaching $57.0\%$. The catch is that holding back the flow causes tank 1 volume to grow from $10.0$ to $34.5\text{ m}^3$, meaning we need a significantly larger buffer capacity ($V_{\max}$) to avoid overflow. A better alternative, but a costlier one indeed.
+	\item \textbf{Fixes:} We added a coupled feedback throttle mechanism between tank 1 and tank 2, which fixes this overload problem—keeping all $3000$ simulated paths below the limits over the 5-days ( from $14.3\%$) and raising mean cumulative mass removal to $57.0\%$. The catch is that holding back the flow causes tank 1's mean volume to peak at $34.5\text{ m}^3$ (up from $10.0\text{ m}^3$), meaning we need a significantly larger buffer capacity ($V_{\max}$) to avoid overflow. A better alternative, but a much costlier one indeed.
 \end{itemize}
 
 
 
-
+\newpage
 
 
 
