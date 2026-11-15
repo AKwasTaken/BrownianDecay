@@ -5,6 +5,7 @@
 # Python Stuff
 uv.lock
 pyproject.toml
+/BioWasteTreatment/__pycache__
 .venv/
 
 # TeX Stuff

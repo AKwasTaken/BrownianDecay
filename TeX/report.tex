@@ -115,7 +115,7 @@
     Sarang Sudhakar
   }
   \IEEEauthorblockA{
-  	\{sivasankaran23, ashlin23, aneeth23, amal23, sarang23\}@iisertvm.ac.in\\
+  	\{sivasankaran23, ashlin23, aneeth23, abdulla23, sarang23\}@iisertvm.ac.in\\
   	\\
     \textit{IISER Thiruvananthapuram, Kerala}
   }
@@ -124,9 +124,9 @@
 \maketitle
 
 \begin{abstract}
-
-To study municipal wastewater treatment plants to deal with overflows and shocks better, instead of relying on deterministic models to simulate the working conditions of the plant, we could use the methods from this paper. We discuss in detail of the five-dimensional model proposed by Harris C J in 1977 for a two tank treatment plant, which includes a buffer tank to control flow better. After analysing the 3000 Monte-Carlo Simulations, we infer that the buffer tank absorbs about $15-20\%$ of the rough inflow variance, and with a $\approx2.5$ hour lag. Regardless, the plant breaches regulations in about a day of the inflow under heavy load (passive, that too), we propose a better system that has a feedback throttle mechanism that solves* it.
+To study municipal wastewater treatment plants to deal with overflows and shocks better, instead of relying on deterministic models to simulate the working conditions of the plant, we use the stochastic approach in this paper. We discuss in detail the five-dimensional model proposed by Harris C J in 1977 for a two tank treatment plant, which includes a buffer tank to control flow better. After analysing 3000 Monte-Carlo Simulations, we infer that the buffer tank absorbs about $13\%$ of the incoming concentration variance, with a $\approx 10.3$ hour lag. Regardless, the plant breaches our illustrative regulatory limit ($3.5\text{ mg/L}$) in about $1.36$ days on average under heavy passive load, leaving only a $14.3\%$ survival rate. To fix this, we propose an active feedback throttle mechanism that pushes 5-day survival to $100\%$.
 \end{abstract}
+
 
 \smallskip
 
@@ -137,13 +137,7 @@ Stochastic Differential Equations, It\^o Calculus, Diffusion, Feller Square Root
 \end{IEEEkeywords}
 
 
-
-
-
-
-
-
-
+\medskip
 
 
 \section{Motivation}
@@ -260,28 +254,29 @@ The mass balance of the wastewater tank is modeled from equation \ref{eq:mass_ba
 
 \begin{equation}
 \label{eq:mass_balance}
-\frac{dV}{dt} = Q_{\text{out}} - Q_{\text{in}}
+\frac{dV}{dt} = Q_{\text{in}} - Q_{\text{out}}
 \end{equation}
 
-We assume the best outflow rate from the tank 1 to be as such below:
+We assume the best outflow rate from the tank 1 to be proportional to its current volume, as such below:
 
 \begin{equation*}
-	Q^* = \frac{\alpha_1+1}{\beta_1}
+	Q_{\text{out}} = \frac{\alpha_1+1}{\beta_1} X_t^1
 \end{equation*}
 
 where, $\beta _{1}$ is the feedback gain coefficient, and $\alpha _{1}$ is a scaling constant.
 
 \smallskip
 
-And the incoming flow is $X_t^2$, and if it exceeds this rate, the total derivative becomes  negative, which shows the accumulation of water in the tank.
+And the incoming flow is $X_t^2$, and if it exceeds this rate, the total derivative becomes positive, which shows the accumulation of water in the tank.
 \smallskip
 
 So we have the equation,
 
 \begin{equation}
 \label{eq:Xt1}
-	dX_t^1 = \left(\frac{\alpha_1 + 1}{\beta_1} - X_t^2\right)dt
+	dX_t^1 = \left(X_t^2 - \frac{\alpha_1 + 1}{\beta_1} X_t^1\right)dt
 \end{equation}
+
 
 
 \medskip
@@ -369,8 +364,7 @@ The first term of the equation tells us how the dirtiness gets pulled back to th
 
 And this is with respect to the tank size ($X_t^1$), because a larger tank size will be able to slow down fast erratic changes better, and dilute the big spikes. 
 
-The second part of the equation explains the randomness of the environmental noise. The square root is so that the dirt level is always possible, since it cant drop below zero. 
-
+The second part of the equation explains the randomness of the environmental noise. Under the Feller condition $\alpha_2 + 1 \geq \gamma_2$ (satisfied here since $2 \geq 0.2$), the square root is so that the dirt level is always possible, since it cant drop below zero. 
 
 
 
@@ -384,7 +378,6 @@ The second part of the equation explains the randomness of the environmental noi
 
 \subsection{\textbf{Tank 1-2 Pollutant Concentration ($X^4$)}}
 
-
 Currently, we have the total mass of the stuff inside the tank as $M_t = X_t^1 X_t^4$ (vol x concentration). That gives us,
 
 \begin{align*}
@@ -395,15 +388,16 @@ Currently, we have the total mass of the stuff inside the tank as $M_t = X_t^1 X
 Change in mass is the difference between incoming and outgoing mass rate. So,
 
 \begin{equation*}
-	dM_t = \left( X_t^2 X_t^3 - X_{\text{out}} X_t^4 \right) dt
+	dM_t = \left( X_t^2 X_t^3 - Q_{\text{out}} X_t^4 \right) dt
 \end{equation*}
 
-If we assume that the tank's liquid changes slowly, relative to the concentration changes, we can take $dX_t^1 \approx 0$, and $X_\text{out} \approx X_t^2$. And since $X^1$ has zero diffusion,  $d\langle X^1, X^4 \rangle_t = 0$. So substituting these will get us,
+Since $X^1$ has zero diffusion, $d\langle X^1, X^4 \rangle_t = 0$. Substituting $dX_t^1 = (X_t^2 - Q_{\text{out}})dt$ into the product rule cancels out the $Q_{\text{out}} X_t^4\,dt$ terms directly without needing to assume $dX_t^1 \approx 0$. That gets us,
 
 \begin{equation}
 \label{eq:Xt4}
 	dX_t^4 = (X_t^3 - X_t^4) \frac{X_t^2}{X_t^1}\,dt
 \end{equation}
+
 
 
 \smallskip
@@ -420,7 +414,6 @@ The difference term is that when the incoming sewage is dirtier than the current
 
 
 
-
 \subsection{\textbf{Treated Pollutant Concentration ($X^5$)}}
 
 Conservation of mass gives us,
@@ -429,40 +422,34 @@ Conservation of mass gives us,
 	\frac{dX^5}{dt} = \underbrace{\frac{Q}{V}(X^4 - X^5)}_{\text{Hydraulic dilution}} - \underbrace{R(X^5)}_{\text{Microbial consumption}}
 \end{equation}
 
-\smallskip
-
-where V is the reactor volume and Q is the flow.
-
-The Monod Equation for microbial consumption \cite{monodeq} is, 
+where $V$ is the reactor volume and $Q$ is the flow. The Monod Equation for microbial consumption \cite{monodeq} is, 
 
 \begin{equation*}
 	R(X^5) = \frac{\mu_{\max} X_{\text{bacteria}}}{Y} \left( \frac{X^5}{K_s + X^5} \right)
 \end{equation*}
 
-Using Taylor series we can expand this into,
+Using Taylor series we can expand this around an operating point $X^*$ into,
 
 \begin{align*}
 	R(X^5) &\approx R(X^*) + R'(X^*)(X^5 - X^*)\\
-	&= \underbrace{( R(X^*) - R'(X^*)X^* )}_{-a} + {R'(X^*)} X^5\\
-	&= -a + k X^5
+	&= \underbrace{( R(X^*) - R'(X^*)X^* )}_{a} + {R'(X^*)} X^5\\
+	&= a + k X^5
 \end{align*}
 
-
-Let D be the diffusion rate, $D = Q/V$, and some $b \approx D + k$.
+Let $D$ be the dilution rate, $D = Q/V$, and $b = D + k$.
 
 \begin{align*}
-	\frac{dX^5}{dt} &= D(X^4 - X^5) - ( -a + k X^5 )\\
-	&\approx a + b(X^4 - X^5)\\
+	\frac{dX^5}{dt} &= D(X^4 - X^5) - ( a + k X^5 )\\
+	&= D X^4 - b X^5 - a
 \end{align*}
-
-\smallskip
 
 And finally,
 
 \begin{equation}
 \label{eq:Xt5}
-	dX_t^5 = \left( a + b(X_t^4 - X_t^5) \right) dt
+	dX_t^5 = \left( D X_t^4 - b X_t^5 - a \right) dt
 \end{equation}
+
 
 
 
@@ -483,9 +470,7 @@ And finally,
 \begin{align*}
 	dX_t^1
 &=
-\left(
-\frac{\alpha_1 + 1}{\beta_1} - X_t^2
-\right)dt
+\left(X_t^2 - \frac{\alpha_1 + 1}{\beta_1} X_t^1\right)dt
 \\[8pt]
 dX_t^2
 &=
@@ -516,9 +501,7 @@ dX_t^4
 \\[8pt]
 dX_t^5
 &=
-\left(
-a + b(X_t^4 - X_t^5)
-\right)dt
+\left(D X_t^4 - b X_t^5 - a\right)dt
 \end{align*}
 
 
@@ -578,7 +561,7 @@ We can see that only two out of the five equations have a diffusion term. So we 
 
 \smallskip
 
-This system is called a \textbf{Hypoelliptic System}.
+This system is called a \textbf{degenerate diffusion system}.
 
 
 
@@ -629,8 +612,9 @@ where $Z_n^k \sim \mathcal{N}(0,1)$
 When applying Euler-Maruyama method to the system, it gives:
 
 \begin{equation}
-	X_{n+1}^1 = X_n^1 + \left(  \frac{\alpha_1+1}{\beta_1} - X_n^2  \right) \Delta t
+	X_{n+1}^1 = X_n^1 + \left( X_n^2 - \frac{\alpha_1+1}{\beta_1} X_n^1 \right) \Delta t
 \end{equation}
+
 
 
 
@@ -682,13 +666,9 @@ X_n^4+
 
 
 \begin{align}
-	X_{n+1}^5
-&=
-X_n^5+
-\left(
-a+b(X_n^4-X_n^5)
-\right)\Delta t
+	X_{n+1}^5 &= X_n^5 + \left( D X_n^4 - b X_n^5 - a \right) \Delta t
 \end{align}
+
 
 
 \smallskip
@@ -735,7 +715,6 @@ The initial values of the simulation are as follows:
 \smallskip
 
 and the initial parameters are set as,
-
 \begin{align*}
 &\alpha_1=1.0,
 &&\beta_1=1.2,
@@ -743,62 +722,48 @@ and the initial parameters are set as,
 &\alpha_2=1.0,
 &&\beta_2=1.0,
 &&\gamma_2=0.20,\\
-&a=0.05,
-&&b=1.50
+&D=1.35,
+&&k=0.25,
+&&a=0.05,\quad b=1.60
 \end{align*}
 
-
-\smallskip
-
-
-The initial state vector is:
-
+And $X_2(0) = \frac{\alpha_1 + 1}{\beta_1} X_1(0) \approx 16.67$, for the initial condition. Hence, we have
 \begin{equation*}
-	X_0 = [10.0, \frac{\alpha_1 + 1}{\beta_1}, 5.0, 4.0, 1.0]^T
+X_0=[10.0,\;16.67,\;5.0,\;4.0,\;1.0]^T	
 \end{equation*}
 
 
-And $(\alpha_1 + 1)/\beta_1$ turned out to be $\approx1.667$ for the initial condition. Hence, we have
-
-\begin{equation*}
-X_0=[10.0,\;1.667,\;5.0,\;4.0,\;1.0]^T	
-\end{equation*}
-
+\medskip
 
 
 
 
 \begin{algorithm}[htbp]
-\caption{Euler-Maruyama Discretization Scheme}
+\caption{Projected Euler-Maruyama Scheme}
 \label{alg:euler_maruyama}
 \begin{lstlisting}[language=Python]
-X = np.zeros((5, N_steps + 1, N_paths))
-X[:, 0, :] = np.array([X1_0, X2_0, 
-                       X3_0, X4_0, 
-                       X5_0])[:, None]
-
 for n in range(N_steps):
     x1 = np.maximum(X[0, n, :], 1e-4)
     x2 = np.maximum(X[1, n, :], 0.0)
     x3 = np.maximum(X[2, n, :], 0.0)
-    x4, x5 = X[3, n, :], X[4, n, :]
+    x4 = np.maximum(X[3, n, :], 0.0)
+    x5 = np.maximum(X[4, n, :], 0.0)
 
-    Z1 = np.random.normal(0.0, 1.0, size=N_paths)
-    Z2 = np.random.normal(0.0, 1.0, size=N_paths)
+    Z1 = rng.standard_normal(N_paths)
+    Z2 = rng.standard_normal(N_paths)
     diff2 = np.sqrt(2.0 * gamma1 * x2 / x1) * sq_dt * Z1
     diff3 = np.sqrt(2.0 * gamma2 * x3 / x1) * sq_dt * Z2
 
-    X[0, n+1, :] = x1 + (((alpha1 + 1.0) / beta1) 
-                         - x2) * dt
-    X[1, n+1, :] = x2 + (alpha1 + 1.0 
-                         - beta1 * (x2 / x1)) * dt + diff2
-    X[2, n+1, :] = x3 + ((alpha2 + 1.0 
-                         - beta2 * x3) / x1) * dt + diff3
-    X[3, n+1, :] = x4 + ((x3 - x4) * (x2 / x1)) * dt
-    X[4, n+1, :] = x5 + (a + b * (x4 - x5)) * dt
+    q_out = ((alpha1 + 1.0) / beta1) * x1
+    X[0, n+1, :] = np.maximum(x1 + (x2 - q_out)*dt, 1e-4)
+    X[1, n+1, :] = np.maximum(x2 + (alpha1 + 1.0 
+                   - beta1*(x2/x1))*dt + diff2, 0.0)
+    X[2, n+1, :] = np.maximum(x3 + ((alpha2 + 1.0 
+                   - beta2*x3)/x1)*dt + diff3, 0.0)
+    X[3, n+1, :] = np.maximum(x4 + ((x3 - x4)*(x2/x1))*dt, 0.0)
+    X[4, n+1, :] = np.maximum(x5 + (D*x4 - b*x5 - a)*dt, 0.0)
 \end{lstlisting}
 \end{algorithm}
-
 
 
 
@@ -838,7 +803,7 @@ From the simulation, we are able to see the working of equalisation tank. Figure
 
 \smallskip
 
-Figure \ref{fig:effluent_quality} shows an interesting graph. It is between effluent concentration and time, and it is shown to rise until day 3, and it falls. This is because, the pollutant when first added to the tank, the bacterial colony struggle to keep up with the flow, so the concentration increases, until it reaches a peak, where the inflow concentration is relatively lower, and the bacterial colony catches up. The grey lines are a handful of the 3000 simulations performed, and all of those have smooth curves without any jagged edges. This shows the proper working of the treatment plant, with minimal to no spikes. 
+Figure \ref{fig:effluent_quality} shows an interesting graph. It is between effluent concentration and time, and it is shown to rise from $1.0\text{ mg/L}$ to the max of $3.77\text{ mg/L}$ at around $t \approx 2.36\text{ days}$. This is because, the pollutant when first added to the tank, the bacterial colony struggle to keep up with the flow, so the concentration increases, until it reaches a peak, where the inflow concentration is relatively lower, and the bacterial colony catches up. The grey lines are a handful of the 3000 simulations performed, and all of those have smooth curves without any jagged edges. This shows the proper working of the treatment plant, with minimal to no spikes. 
 
 
 
@@ -903,7 +868,7 @@ The formula is given by,
 =
 1-
 \frac{
-\int_0^t X_s^5X_s^2\,ds
+\int_0^t Q_{\text{out}}(s) X_s^5\,ds
 }{
 \int_0^t X_s^3X_s^2\,ds
 }
@@ -912,7 +877,7 @@ The formula is given by,
 
 
 
-Figure \ref{fig:cumulative_mass_removal_efficiency} shows the cumulative mass removal starts at around 80\%, then gradually drops to around 6-8\% as the plant stabilises. The ratio is much smaller than expected, but this only tracks the plant's efficiency in such chaotic conditions. So this is pretty much accurate with physical systems as a worst case scenario.
+Figure \ref{fig:cumulative_mass_removal_efficiency} shows the cumulative mass removal is undefined at $t=0$, and gradually settles to $22.8\%$ by day 5 as the plant stabilises. The ratio is much smaller than expected, but this only tracks the plant's efficiency in such chaotic conditions. So this is pretty much accurate with physical systems as a worst case scenario.
 
 
 
@@ -941,7 +906,7 @@ The ratio is given by:
 \end{equation}
 
 
-Figure \ref{fig:macro_concentration_drop_ratio} shows that the ratio increases smoothly from $0.2$ to around $1.3$ during the low-inflow time. 
+Figure \ref{fig:macro_concentration_drop_ratio} shows that the ratio increases smoothly from $0.20$ to $0.89$ during the low-inflow time. 
 
 
 
@@ -951,8 +916,9 @@ Figure \ref{fig:macro_concentration_drop_ratio} shows that the ratio increases s
 \caption{Cumulative Mass Removal and Macro Ratio}
 \label{alg:mass_metrics}
 \begin{lstlisting}[language=Python]
+q_out = ((alpha1 + 1.0) / beta1) * X[0, :, :]
 mass_flow_in = X[1, :, :] * X[2, :, :]
-mass_flow_out = X[1, :, :] * X[4, :, :]
+mass_flow_out = q_out * X[4, :, :]
 
 cum_mass_in = cumulative_trapezoid(
     mass_flow_in, t, axis=0, initial=0.0
@@ -965,9 +931,8 @@ with np.errstate(divide="ignore", invalid="ignore"):
     removal_eff = (1.0 - (cum_mass_out 
                           / cum_mass_in)) * 100.0
 
-removal_eff[0, :] = (1.0 - (X[4, 0, :] 
-                            / X[2, 0, :])) * 100.0
-mean_eff = np.mean(removal_eff, axis=1)
+removal_eff[0, :] = np.nan
+mean_eff = np.nanmean(removal_eff, axis=1)
 
 ratio_of_expectations = (
     np.mean(X[4, :, :], axis=1) 
@@ -975,6 +940,7 @@ ratio_of_expectations = (
 )
 \end{lstlisting}
 \end{algorithm}
+
 
 
 
@@ -1029,7 +995,7 @@ The variance ratio between tank 1 treated water and raw wastewater:
 
 
 
-From figure \ref{fig:variance_damping_ratio}, we can see that the ratio starts from zero and climbs to around 0.85 or 85\% as the variance accumulates. This shows that the Tank 1 absorbs around 15-20\% of the raw variance under constant noise.
+From figure \ref{fig:variance_damping_ratio}, we can see that the ratio starts from zero and climbs to around $0.87$ or $87\%$ as the variance accumulates. This shows that the Tank 1 absorbs around $13\%$ of the raw variance under constant noise.
 
 
 
@@ -1054,16 +1020,15 @@ ccorr = np.zeros(len(lags))
 
 for idx, lag in enumerate(lags):
     if lag < 0:
-        ccorr[idx] = np.mean(x3_c[-lag:, :] 
-                             * x4_c[:lag, :])
+        a_s, b_s = x3_c[-lag:, :], x4_c[:lag, :]
     elif lag > 0:
-        ccorr[idx] = np.mean(x3_c[:-lag, :] 
-                             * x4_c[lag:, :])
+        a_s, b_s = x3_c[:-lag, :], x4_c[lag:, :]
     else:
-        ccorr[idx] = np.mean(x3_c * x4_c)
+        a_s, b_s = x3_c, x4_c
+    ccorr[idx] = np.mean(a_s * b_s) / (np.std(a_s) * np.std(b_s) + 1e-8)
 
-ccorr /= (np.std(X[2, :, :]) * np.std(X[3, :, :]))
 tau_star = (lags * dt)[np.argmax(ccorr)]
+
 \end{lstlisting}
 \end{algorithm}
 
@@ -1098,12 +1063,11 @@ The cross correlation between $X_t^3$ and $X_t^4$ is:
 
 
 
-Figure \ref{fig:cross_correlation_lag} shows the peak is at $\tau^* = 0.10$ days, which is about 2.4 hours, and the corrrelation of $0.78$.
+Figure \ref{fig:cross_correlation_lag} shows the peak is at $\tau^* = 0.43\text{ days}$ ($\approx 10.3\text{ hours}$), with a correlation of $0.92$.
 
 \smallskip
 
-From this we can infer that the retention delay is 2.4 hours, before the inflow sewage water goes to tank 2.
-
+From this we can infer that the retention delay is 10.3 hours, before the inflow sewage water goes to tank 2.
 
 \medskip
 
@@ -1154,7 +1118,7 @@ Let $\tau$ be the first time the plant crosses the threshold.
 
 \smallskip
 
-Figure \ref{fig:first_hitting_time_density} shows the probability density of $\tau$ across the simulation. It shows a bell curve, peaking at $\tau \approx 1.05$ days
+Figure \ref{fig:first_hitting_time_density} shows the probability density of $\tau$ across the simulation. It shows a bell curve, peaking at $\tau \approx 1.36$ days, as mean = $1.36$ days, and median = $1.28$.
 
 
 \medskip
@@ -1186,7 +1150,7 @@ and failure probability,
 
 
 
-We can see that at around $t = 1$ days, the survival drops to zero, and failure shoots to 100\%. It shows that under large inflow loading, the regulation is broken. So from the analysis, we can infer that the plant fails for certain if the buffer capacity is insufficient for the inflow.
+We can see that by day 5, the survival drops to $14.3\%$, and failure shoots to $85.7\%$. It shows that under large inflow loading, the regulation is broken. So from the analysis, we can infer that the plant fails for certain if the buffer capacity is insufficient for the inflow.
 
 
 
@@ -1259,11 +1223,13 @@ where $C_\text{target}$ is a value that is below the regulation limits ($C_\text
 
 \smallskip
 
-So the equation \ref{eq:Xt5} becomes,
+So the equations \ref{eq:Xt1} and \ref{eq:Xt5} become,
 
-\begin{equation}
-	dX_t^5 = \left(a + b \cdot u(X_t^5)(X_t^4 - X_t^5)\right) dt
-\end{equation}
+\begin{align}
+	dX_t^1 &= \left(X_t^2 - u(X_t^5)\frac{\alpha_1 + 1}{\beta_1} X_t^1\right) dt \\
+	dX_t^5 &= \left(D \cdot u(X_t^5) X_t^4 - (D \cdot u(X_t^5) + k) X_t^5 - a\right) dt
+\end{align}
+
 
 
 \smallskip
@@ -1278,7 +1244,7 @@ When the plant is working properly, $X^5 << C_\text{target}$, so $u(X_t^5)\appro
 
 \subsection{\textbf{Simulation and Analysis}}
 
-We simulated the model with $N_\text{paths} = 2000$ and the same $5$ day period.
+We simulated the model with $N_\text{paths} = 3000$ and the same $5$ day period.
 
 
 
@@ -1286,34 +1252,32 @@ We simulated the model with $N_\text{paths} = 2000$ and the same $5$ day period.
 
 
 \begin{algorithm}[htbp]
-\caption{Active Retention Throttling Controller}
+\caption{Coupled Active Retention Controller}
 \label{alg:active_controller}
 \begin{lstlisting}[language=Python]
 for n in range(N_steps):
-    Z1 = np.random.normal(0, 1, N_paths)
-    Z2 = np.random.normal(0, 1, N_paths)
+    x1 = np.maximum(X[0, n, :], 1e-4)
+    x2 = np.maximum(X[1, n, :], 0.0)
+    x3 = np.maximum(X[2, n, :], 0.0)
+    x4 = np.maximum(X[3, n, :], 0.0)
+    x5 = np.maximum(X[4, n, :], 0.0)
 
-    x1_c, x2_c, x3_c, x4_c, x5_c = X_ctrl[:, n, :]
-    x1_ct = np.maximum(x1_c, 1e-4)
-    x2_ct = np.maximum(x2_c, 0.0)
-    x3_ct = np.maximum(x3_c, 0.0)
+    Z1 = rng.standard_normal(N_paths)
+    Z2 = rng.standard_normal(N_paths)
 
-    u = 0.05 + 0.95 / (1.0 + np.exp(k_c * (x5_c - C_target)))
+    u = u_min + (1.0 - u_min) / (1.0 + np.exp(k_c * (x5 - C_target)))
+    q_out = u * ((alpha1 + 1.0) / beta1) * x1
 
-    dX1_c = (((alpha1 + 1.0) / beta1) - x2_c) * dt
-    dX2_c = ((alpha1 + 1.0 - beta1 * (x2_c / x1_ct)) * dt
-             + np.sqrt(2 * gamma1 * x2_ct / x1_ct) * sq_dt * Z1)
-    dX3_c = (((alpha2 + 1.0 - beta2 * x3_c) / x1_ct) * dt
-             + np.sqrt(2 * gamma2 * x3_ct / x1_ct) * sq_dt * Z2)
-    dX4_c = (x3_c - x4_c) * (x2_c / x1_ct) * dt
-    dX5_c = (a + b * u * (x4_c - x5_c)) * dt
-
-    X_ctrl[:, n+1, :] = [
-        x1_c + dX1_c, x2_c + dX2_c, x3_c + dX3_c,
-        x4_c + dX4_c, x5_c + dX5_c
-    ]
+    X[0, n+1, :] = np.maximum(x1 + (x2 - q_out)*dt, 1e-4)
+    X[1, n+1, :] = np.maximum(x2 + (alpha1 + 1.0 
+                   - beta1*(x2/x1))*dt + diff2, 0.0)
+    X[2, n+1, :] = np.maximum(x3 + ((alpha2 + 1.0 
+                   - beta2*x3)/x1)*dt + diff3, 0.0)
+    X[3, n+1, :] = np.maximum(x4 + ((x3 - x4)*(x2/x1))*dt, 0.0)
+    X[4, n+1, :] = np.maximum(x5 + (D*u*x4 - (D*u + k)*x5 - a)*dt, 0.0)
 \end{lstlisting}
 \end{algorithm}
+
 
 
 
@@ -1353,21 +1317,21 @@ Figure \ref{fig:control_effluent_comparison} shows the threshold being crossed b
 
 \smallskip
 
-From Figure \ref{fig:control_survival_comparison} we can see that the failure probability is drastically reduced from just one day, and is holding pretty well, with maintaining an overall 5-day survival rate over 80\%.
+From Figure \ref{fig:control_survival_comparison} we can see that the failure probability is drastically reduced from just one day, and is holding pretty well, with maintaining an overall 5-day survival rate of $100\%$ (major improvement from $14.3\%$).
 
 \smallskip
 
 The Graph \ref{fig:control_efficiency_comparison} shows the cumulative mass removal efficiency, given by the formula:
 
 \begin{equation*}
-	\eta_{\text{mass}}(t) = 1 - \frac{\int_0^t u(X_s^5) X_s^2 X_s^5 \, ds}{\int_0^t X_s^2 X_s^3 \, ds}
+	\eta_{\text{mass}}(t) = 1 - \frac{\int_0^t u(X_s^5) Q_{\text{out}}(s) X_s^5\,ds}{\int_0^t X_s^2 X_s^3 \, ds}
 \end{equation*}
 
 
 
 \smallskip
 
-The passive model plummets to an efficiency of 5-6\%, but the active model has an initial dip, but goes to a stable 90\%, which is shockingly perfect. 
+The passive model plummets to an efficiency of $22.8\%$, while the active model takes an slight dip at the start but settles at a nice $57.0\%$, more than double the passive's performance.
 
 
 \smallskip
@@ -1415,8 +1379,9 @@ The model from 1977 developed by C J Harris is a really good starting point in u
 	\item \textbf{Solution:} People now add spikes called \textbf{Poisson Jump Process} ($dN_t$) with the brownian motion, which creates a new diffusion model,
 
 \begin{equation*}
-	dX_t^3 = \underbrace{dt}_{\text{Normal Drift}} + \underbrace{dW_t}_{\text{Wiggling}} + \underbrace{dN_t}_{\text{Spikes}}
+	dX_t^3 = \underbrace{f_3(X_t)\,dt}_{\text{Normal Drift}} + \underbrace{g_3(X_t)\,dW_t}_{\text{Wiggling}} + \underbrace{J\,dN_t}_{\text{Spikes}}
 \end{equation*}
+
 
 
 \smallskip
@@ -1489,104 +1454,98 @@ This works by having the $dN_t$ at zero at most of the times, and every once in 
 
 
 
-\bigskip
-
-
-
 
 
 
 \section{Conclusion}
 
-
-
-
-In this course project, we learned about how a bio-wastewater treatment plant under heavy loads and unpredictable flow rates, simulated using Harris's five-dimensional stochastic model
+In this course project, we studied how a bio-wastewater treatment plant behaves under heavy loads and unpredictable flow rates, simulated using Harris's five-dimensional stochastic model.
 
 From the simulation, we were able to infer the following:
 
 \begin{itemize}
-	\item \textbf{The Buffer Tank holds up (mostly):} The unstable inflow is contained in tank 1, and it holds up pretty well, acting as a shock absorbant, and slowing down the flow, reducing the flow variance by about 15-20\%.
-	\item \textbf{Tank Failure:} Even with this tank 1, the tank still fails to uphold the regulations, and fails miserably only after 1 day of this rugged flow. This happens for a lot of reasons, but the main one being the 'perfect' tank 1. It smoothens out the flow a lot, but the flow is still a lot higher, which leads to the absolute demise of our fellow bacterial soldiers.
-	\item \textbf{Fixes:} We added a feedback throttle mechanism, which throttles the flow from the tank 1 to tank 2, which fixes this increased flow problem, and gives us a significantly better result, at an efficiency around 90\%, and survival rate from 0\% to 80\%. The catch is that it needs a significantly larger tank 1 to hold in the extra sewage until the previous batch is process and the inflow slows down. A better alternative, but a costlier one indeed.
+	\item \textbf{The Buffer Tank holds up (mostly):} The unstable inflow is contained in tank 1, and it holds up pretty well, acting as a shock absorbent, slowing down the flow by a $\approx 10.3$ hour lag and reducing incoming concentration variance by about $13\%$.
+	\item \textbf{Tank Failure:} Even with tank 1, the passive system still fails to uphold our $3.5\text{ mg/L}$ threshold, breaching in about $1.36$ days on average with only a $14.3\%$ 5-day survival rate. It smoothens out the spikes, but the sustained load still leads to the demise of our fellow bacterial soldiers.
+	\item \textbf{Fixes:} We added a coupled feedback throttle mechanism between tank 1 and tank 2, which fixes this overload problem and boosts 5-day survival from $14.3\%$ to $100\%$, with cumulative mass removal reaching $57.0\%$. The catch is that holding back the flow causes tank 1 volume to grow from $10.0$ to $34.5\text{ m}^3$, meaning we need a significantly larger buffer capacity ($V_{\max}$) to avoid overflow. A better alternative, but a costlier one indeed.
 \end{itemize}
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \bigskip
 
 
 
+\section*{Acknowledgment}
 
+We would like to thank our course instructor, Prof. Utpal Manna. We acknowledge our primary course reference text by Kloeden and Platen \cite{kloedenplaten} (Chapter 7 on Applications of SDEs), as well as the works of C. J. Harris, T. E. Unny, and Karmeshu \cite{cjharris, unny_karmeshu}. Finally, in accordance with course guidelines, we disclose the use of AI assistance (Gemini, Google) only for the Python simulation/plotting scripts and for minor \LaTeX\ layout formatting. All mathematical formulations, analysis, and text were written by us, the authors.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\bigskip
 
 
 
@@ -1596,15 +1555,17 @@ From the simulation, we were able to infer the following:
 
 \begin{thebibliography}{00}
 
+\bibitem{eulermaruyama} Maruyama, G. (1955). Continuous Markov processes and stochastic equations. \textit{Rendiconti del Circolo Matematico di Palermo}, 4(1), 48--90.
+
+\bibitem{unny_karmeshu} Unny, T. E., \& Karmeshu (1984). Stochastic nature of outputs from conceptual reservoir model cascades. \textit{Journal of Hydrology}, 68(1--4), 161--180.
+
+\bibitem{oksendal} \O ksendal, B. (2003). \textit{Stochastic Differential Equations: An Introduction with Applications}. 6th ed., Springer-Verlag, Berlin.
 
 \bibitem{cjharris} Harris, C. J. (1977) ‘Modelling, simulation and control of stochastic systems with applications in wastewater treatment’, International Journal of Systems Science, 8(4), pp. 393–411. doi: 10.1080/00207727708942050.
 
 \bibitem{wfeller} Feller, W. (1951). Two singular diffusion problems. Annals of Mathematics, 54(1), 173–182
 
 \bibitem{monodeq} Metcalf \& Eddy, Inc., et al. \textit{Wastewater Engineering: Treatment and Resource Recovery}. 5th ed., McGraw-Hill Education, 2014.
-
-
-\bibitem{eulermaruyama} Maruyama, Gisiro. "On the convergence of numerical schemes for ordinary stochastic differential equations." Mathematical Reviews 16 (1955): 1127.
 
 \bibitem{kloedenplaten} Kloeden, P. E., \& Platen, E. (1992). \textit{Numerical Solution of Stochastic Differential Equations}. Springer-Verlag, Berlin, pp. 263--266.
 
