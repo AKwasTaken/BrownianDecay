@@ -20,9 +20,8 @@ jobs:
 
       - name: Render first page to PNG
         run: |
-          # Converts page 1 (-f 1 -l 1) at 150 DPI (-r 150) to TeX/preview.png
-          pdftoppm -png -r 150 -f 1 -l 1 TeX/report.pdf TeX/preview_tmp
-          mv TeX/preview_tmp-1.png TeX/preview.png
+          # Converts page 1 (-f 1 -l 1) at 150 DPI (-r 150) directly to TeX/preview.png
+          pdftoppm -png -r 150 -f 1 -l 1 -singlefile TeX/report.pdf TeX/preview
 
       - name: Commit and push if changed
         run: |
